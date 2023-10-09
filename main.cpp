@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string> 
 #include <vector>
 #include <random>
 #include <ctime>
@@ -24,6 +25,24 @@ private:
     LandType m_type{LandType::maxTypes};
     double m_area{};
 public:
+    Land(int type, double area)
+    {
+        setType(type);
+        setArea(area);
+    }
+    Land(bool rand = 0): m_type{ LandType::maxTypes }, m_area{ 0 }
+    {
+        if (rand)
+        {
+            randomize();
+        }
+    }
+    
+    void randomize()
+    {
+		setType( getRandomInt(0, static_cast<int>(LandType::maxTypes) - 1) );
+		setArea( getRandomInt(1, 9999) / 100.0 );
+    }
     void setType(int type)
     {
         if (type < static_cast<int>(LandType::maxTypes))
@@ -39,20 +58,8 @@ public:
             m_area = area;
         }
     }
-    Land(int type, double area)
-    {
-        setType(type);
-        setArea(area);
-    }
-    Land(): m_type{ LandType::maxTypes }, m_area{ 0 }
-    {}
-    void randomize()
-    {
-		setType( getRandomInt(0, static_cast<int>(LandType::maxTypes) - 1) );
-		setArea( getRandomInt(1, 99999) / 10.0 );
-    }
-    int getType(){ return static_cast<int>(m_type); }
-    double getArea(){ return m_area; }
+    int getType() const { return static_cast<int>(m_type); }
+    double getArea() const { return m_area; }
     void input()
     {
         std::cout << "Введите тип участка\n"
@@ -95,22 +102,24 @@ public:
         };
         std::cout << "участок площадью " << m_area << " кв. км\n";
     }
+    //void 
 };
 
 class Holder
 {
 private:
+    std::string m_fio;
     std::vector<Land*> m_lands;
 public:
-    Holder(size_t size)
+    Holder(std::string fio, size_t size, bool rand = 0): m_fio {fio}
     {
         m_lands.resize(size);
         for (size_t i = 0; i < size; i++)
         {
-            m_lands[i] = new Land();
+            m_lands[i] = new Land(rand);
         }
     }
-    Holder(size_t size, Land lands[])
+    Holder(std::string fio, size_t size, Land lands[]): m_fio {fio}
     {
         m_lands.resize(size);
         for (size_t i = 0; i < size; i++)
@@ -119,28 +128,28 @@ public:
         }
     }
 
-
     void setLand(size_t i, int type, double area)
     {
         m_lands[i]->setType(type);
         m_lands[i]->setArea(area);
     }
-    void setRandomLands()
+    void randomizeAllLands()
     {
         for (size_t i = 0; i < m_lands.size(); i++)
         {
-			;
+			m_lands[i] -> randomize();
 		};
     }
-    void printLands()
+    void printAllLands()
     {
+        std::cout << "    Собственник " << m_fio << '\n';
         for (size_t i = 0; i < m_lands.size(); i++)
         {
             std::cout << '#' << i + 1 << ' ';
             m_lands[i]->print();
         }
     }
-    void inputLands()
+    void inputAllLands()
     {
         for (size_t i {0}; i < m_lands.size(); i++)
         {
@@ -163,7 +172,7 @@ int main()
 {      
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
     
-    Holder misterA(2);
+    /*Holder misterA(2);
     misterA.setLand(0, 2, 5.0);
     misterA.setLand(1, 1, 10.0);
     misterA.printLands();
@@ -175,8 +184,10 @@ int main()
         {0, 5.0}
     };
     Holder misterB(2, B);
-    misterB.printLands();
+    misterB.printLands();*/
 
+    Holder A("VFT", 15, true);
+    A.printAllLands();
 
     // TO DO:
     // 1) Holder.randomLands
