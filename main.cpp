@@ -1,5 +1,7 @@
 #include <iostream>
-#include <array>
+#include <vector>
+#include <random>
+#include <ctime>
 
 enum class LandType
 {
@@ -10,20 +12,47 @@ enum class LandType
     maxTypes
 };
 
+int getRandomInt(int min, int max)
+{
+    static constexpr double fraction{ 1.0 / (static_cast<double>(RAND_MAX) + 1.0) };
+    return static_cast<int>(std::rand() * fraction * (max - min + 1) + min);
+}
+
 class Land
 {
 private:
-    LandType m_type{};
+    LandType m_type{LandType::maxTypes};
     double m_area{};
 public:
-    Land( int type, double area ):
-        m_type{ static_cast<LandType>(type) }, m_area{ area } 
+    void setType(int type)
     {
+        if (type < static_cast<int>(LandType::maxTypes))
+        {
+                    m_type = static_cast<LandType>(type);
+                    return;
+        }
     }
-    Land():
-        m_type{ LandType::maxTypes }, m_area{ 0 }
+    void setArea(double area)
     {
+        if (area >= 0)
+        {
+            m_area = area;
+        }
     }
+    Land(int type, double area)
+    {
+        setType(type);
+        setArea(area);
+    }
+    Land(): m_type{ LandType::maxTypes }, m_area{ 0 }
+    {}
+    void randomize()
+    {
+		setType( getRandomInt(0, static_cast<int>(LandType::maxTypes) - 1) );
+		setArea( getRandomInt(1, 99999) / 10.0 );
+    }
+    int getType(){ return static_cast<int>(m_type); }
+    double getArea(){ return m_area; }
     void input()
     {
         std::cout << "Введите тип участка\n"
@@ -33,18 +62,15 @@ public:
             << "\tпрямоугольник - 3\n"
             << ": ";
         int type{};
+
         std::cin >> type;
-        if (type < static_cast<int>(LandType::maxTypes))
-        {
-            m_type = static_cast<LandType>(type);
-        }
+        setType(type);
         std::cout << "Введите площадь участка: ";
+
         double area{};
         std::cin >> area;
-        if (area > 0)
-        {
-            m_area = area;
-        }
+        setArea(area);
+        
         std::cout << '\n';
     }
     void print() const
@@ -74,57 +100,88 @@ public:
 class Holder
 {
 private:
-    Land *m_lands{nullptr};
-    size_t m_countLands{};
+    std::vector<Land*> m_lands;
 public:
-    void inputAllLands()
+    Holder(size_t size)
     {
-        for (size_t i {0}; i < m_countLands; i++)
+        m_lands.resize(size);
+        for (size_t i = 0; i < size; i++)
         {
-            m_lands[i].input();
+            m_lands[i] = new Land();
         }
     }
-    Holder(size_t size) : m_countLands{size}
+    Holder(size_t size, Land lands[])
     {
-        m_lands = new Land[size];
-    }
-    Holder(Land lands[])
-    {
-        m_lands = new Land[lands.size()]{lands};
-    }
-    void printLand(size_t land)
-    {
-        if (land >= m_countLands)
+        m_lands.resize(size);
+        for (size_t i = 0; i < size; i++)
         {
-            std::cout << "Land number " << land << " does not exist";
-            return;
+            m_lands[i] = new Land(lands[i].getType(), lands[i].getArea());
         }
-        m_lands[land].print();
     }
-    size_t getCountLands() { return m_countLands; }
 
-    /*~Holder()
+
+    void setLand(size_t i, int type, double area)
     {
-        delete[] m_lands;
-    }*/
+        m_lands[i]->setType(type);
+        m_lands[i]->setArea(area);
+    }
+    void setRandomLands()
+    {
+        for (size_t i = 0; i < m_lands.size(); i++)
+        {
+			;
+		};
+    }
+    void printLands()
+    {
+        for (size_t i = 0; i < m_lands.size(); i++)
+        {
+            std::cout << '#' << i + 1 << ' ';
+            m_lands[i]->print();
+        }
+    }
+    void inputLands()
+    {
+        for (size_t i {0}; i < m_lands.size(); i++)
+        {
+            m_lands[i]->input();
+        }
+    }
+
+    ~Holder()
+    {
+        for (size_t i = 0; i < m_lands.size(); i++)
+        {
+            delete m_lands[i];
+        }
+        
+    }
 };
 
 
 int main()
-{
-    /*Land p{0, 2.0};
-    p.print();*/
+{      
+    std::srand(static_cast<unsigned int>(std::time(nullptr)));
     
-    std::array<Land, 3> ptr{};
+    Holder misterA(2);
+    misterA.setLand(0, 2, 5.0);
+    misterA.setLand(1, 1, 10.0);
+    misterA.printLands();
+    std::cout << '\n';
 
-    //Holder h{2};
-    Holder h{
-        {4.0, 6.0},
-        {4.0, 7.0}
+    Land B[2]
+    {
+        {0, 5.0},
+        {0, 5.0}
     };
-    h.printLand(0);
-    h.printLand(1);
-    std::cout << h.getCountLands();
+    Holder misterB(2, B);
+    misterB.printLands();
+
+
+    // TO DO:
+    // 1) Holder.randomLands
+    // 2) Площадь земель Ho  lder-а
+    // 3) класс земельной палаты
 
     return 0;
 }
