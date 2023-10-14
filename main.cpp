@@ -156,6 +156,15 @@ public:
             m_lands[i]->input();
         }
     }
+    double getArea()
+    {
+        double sumArea{0};
+        for (size_t i = 0; i < m_lands.size(); i++)
+        {
+            sumArea += m_lands[i]->getArea();
+        }
+        return sumArea;
+    }
 
     ~Holder()
     {
@@ -186,8 +195,9 @@ int main()
     Holder misterB(2, B);
     misterB.printLands();*/
 
-    Holder A("VFT", 15, true);
+    Holder A("VFT", 3, true);
     A.printAllLands();
+    std::cout << '\n' << A.getArea();
 
     // TO DO:
     // 1) Holder.randomLands
