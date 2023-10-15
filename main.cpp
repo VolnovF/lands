@@ -112,7 +112,7 @@ private:
     const size_t m_size;
     Land* m_lands;
 public:
-    Holder(std::string fio, size_t size, bool rand = 0)
+    Holder(std::string fio = "", size_t size = 1, bool rand = 0)
         : m_fio {fio}, m_size{ size }, m_lands { new Land[size] }
     {
         if (rand)
@@ -124,12 +124,8 @@ public:
         }
     }
     Holder(std::string fio, size_t size, Land lands[])
-        : m_fio {fio}, m_size{ size }, m_lands { new Land[size] }
+        : m_fio {fio}, m_size{ size }, m_lands { lands }
     {
-        for (size_t i = 0; i < m_size; i++)
-        {
-            setLand(i, lands[i].getType(), lands[i].getArea());
-        }
     }
 
     void setLand(size_t i, int type, double area)
@@ -180,11 +176,36 @@ public:
 class CadastralChamber
 {
 private:
+    std::string m_name;
+    const size_t m_size;
+    Holder* m_holders;
 
 public:
-    CadastralChamber()
+    CadastralChamber(std::string name, size_t size, Holder holders[])
+        : m_name {name}, m_size{ size }, m_holders { holders }
     {
+    }
+    double getArea()
+    {
+        double sum{0};
+        for (size_t i = 0; i < m_size; i++)
+        {
+            sum += m_holders[i].getArea();
+        }
+        return sum;
+    }
+    void printAllHolders()
+    {
+        std::cout << "         Кадастровая палата \"" << m_name << "\"\n";
+        for (size_t i = 0; i < m_size; i++)
+        {
+            m_holders[i].printAllLands();
+        };
+    }
 
+    ~CadastralChamber()
+    {
+        delete[] m_holders;
     }
 };
 
@@ -199,20 +220,22 @@ int main()
     misterA.printLands();
     std::cout << '\n';*/
 
-    Holder misterB("B", 2, new Land[2]{
+    Holder A("A", 3, new Land[3]{
         Land(0, 5.0),
-        Land(1, 10.0)
+        Land(1, 10.0),
+        Land(2, 15.0)
     });
-    misterB.printAllLands();
 
-    Holder A("VFT", 3, true);
-    A.printAllLands();
-    std::cout << '\n' << A.getArea();
+    Holder B("B", 3, true);
+    Holder C("C", 5, true);
+
+    CadastralChamber Chamber("Chamber", 3, new Holder[3]{
+        A, B, C
+    });
+    Chamber.printAllHolders();
 
     // TO DO:
-    // 1) Holder.randomLands
-    // 2) Площадь земель Ho  lder-а
-    // 3) класс земельной палаты
+    // 1) класс земельной палаты
 
     return 0;
 }
