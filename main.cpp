@@ -109,70 +109,82 @@ class Holder
 {
 private:
     std::string m_fio;
-    std::vector<Land*> m_lands;
+    const size_t m_size;
+    Land* m_lands;
 public:
-    Holder(std::string fio, size_t size, bool rand = 0): m_fio {fio}
+    Holder(std::string fio, size_t size, bool rand = 0)
+        : m_fio {fio}, m_size{ size }, m_lands { new Land[size] }
     {
-        m_lands.resize(size);
-        for (size_t i = 0; i < size; i++)
+        if (rand)
         {
-            m_lands[i] = new Land(rand);
+            for (size_t i = 0; i < size; i++)
+            {
+                m_lands[i].randomize();
+            }
         }
     }
-    Holder(std::string fio, size_t size, Land lands[]): m_fio {fio}
+    Holder(std::string fio, size_t size, Land lands[])
+        : m_fio {fio}, m_size{ size }, m_lands { new Land[size] }
     {
-        m_lands.resize(size);
-        for (size_t i = 0; i < size; i++)
+        for (size_t i = 0; i < m_size; i++)
         {
-            m_lands[i] = new Land(lands[i].getType(), lands[i].getArea());
+            setLand(i, lands[i].getType(), lands[i].getArea());
         }
     }
 
     void setLand(size_t i, int type, double area)
     {
-        m_lands[i]->setType(type);
-        m_lands[i]->setArea(area);
+        m_lands[i].setType(type);
+        m_lands[i].setArea(area);
     }
     void randomizeAllLands()
     {
-        for (size_t i = 0; i < m_lands.size(); i++)
+        for (size_t i = 0; i < m_size; i++)
         {
-			m_lands[i] -> randomize();
+			m_lands[i].randomize();
 		};
     }
     void printAllLands()
     {
         std::cout << "    Собственник " << m_fio << '\n';
-        for (size_t i = 0; i < m_lands.size(); i++)
+        for (size_t i = 0; i < m_size; i++)
         {
             std::cout << '#' << i + 1 << ' ';
-            m_lands[i]->print();
+            m_lands[i].print();
         }
     }
     void inputAllLands()
     {
-        for (size_t i {0}; i < m_lands.size(); i++)
+        for (size_t i {0}; i < m_size; i++)
         {
-            m_lands[i]->input();
+            m_lands[i].input();
         }
     }
     double getArea()
     {
         double sumArea{0};
-        for (size_t i = 0; i < m_lands.size(); i++)
+        for (size_t i = 0; i < m_size; i++)
         {
-            sumArea += m_lands[i]->getArea();
+            sumArea += m_lands[i].getArea();
         }
         return sumArea;
     }
 
     ~Holder()
     {
-        for (size_t i = 0; i < m_lands.size(); i++)
-        {
-            delete m_lands[i];
-        }
-        
+        delete[] m_lands;  
+    }
+
+};
+
+class CadastralChamber
+{
+private:
+
+public:
+    CadastralChamber()
+    {
+
     }
 };
 
@@ -185,15 +197,13 @@ int main()
     misterA.setLand(0, 2, 5.0);
     misterA.setLand(1, 1, 10.0);
     misterA.printLands();
-    std::cout << '\n';
+    std::cout << '\n';*/
 
-    Land B[2]
-    {
-        {0, 5.0},
-        {0, 5.0}
-    };
-    Holder misterB(2, B);
-    misterB.printLands();*/
+    Holder misterB("B", 2, new Land[2]{
+        Land(0, 5.0),
+        Land(1, 10.0)
+    });
+    misterB.printAllLands();
 
     Holder A("VFT", 3, true);
     A.printAllLands();
