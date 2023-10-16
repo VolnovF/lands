@@ -25,7 +25,7 @@ private:
     LandType m_type{LandType::maxTypes};
     double m_area{};
 public:
-    Land(int type, double area)
+    Land(LandType type, double area)
     {
         setType(type);
         setArea(area);
@@ -40,8 +40,12 @@ public:
     
     void randomize()
     {
-		setType( getRandomInt(0, static_cast<int>(LandType::maxTypes) - 1) );
+		setType( static_cast<LandType>(getRandomInt(0, static_cast<int>(LandType::maxTypes) - 1)) );
 		setArea( getRandomInt(1, 9999) / 100.0 );
+    }
+    void setType(LandType type)
+    {
+        m_type = type;
     }
     void setType(int type)
     {
@@ -58,7 +62,7 @@ public:
             m_area = area;
         }
     }
-    int getType() const { return static_cast<int>(m_type); }
+    LandType getType() const { return m_type; }
     double getArea() const { return m_area; }
     void input()
     {
@@ -102,7 +106,6 @@ public:
         };
         std::cout << "участок площадью " << m_area << " кв. км\n";
     }
-    //void 
 };
 
 class Holder
@@ -112,7 +115,7 @@ private:
     const size_t m_size;
     Land* m_lands;
 public:
-    Holder(std::string fio = "", size_t size = 1, bool rand = 0)
+    Holder(std::string fio, size_t size, bool rand = 0)
         : m_fio {fio}, m_size{ size }, m_lands { new Land[size] }
     {
         if (rand)
@@ -128,11 +131,14 @@ public:
     {
     }
 
-    void setLand(size_t i, int type, double area)
+    void setLand(size_t i, LandType type, double area)
     {
         m_lands[i].setType(type);
         m_lands[i].setArea(area);
     }
+    std::string getFIO() const { return m_fio; }
+    double getLandArea(size_t i) const { return m_lands[i].getArea(); }
+    LandType getLandType(size_t i) const { return m_lands[i].getType(); }
     void randomizeAllLands()
     {
         for (size_t i = 0; i < m_size; i++)
@@ -140,12 +146,12 @@ public:
 			m_lands[i].randomize();
 		};
     }
-    void printAllLands()
+    void printAllLands() const
     {
-        std::cout << "    Собственник " << m_fio << '\n';
+        std::cout << "Собственник " << m_fio << '\n';
         for (size_t i = 0; i < m_size; i++)
         {
-            std::cout << '#' << i + 1 << ' ';
+            std::cout << '#' << i << ' ';
             m_lands[i].print();
         }
     }
@@ -156,7 +162,7 @@ public:
             m_lands[i].input();
         }
     }
-    double getArea()
+    double getArea() const
     {
         double sumArea{0};
         for (size_t i = 0; i < m_size; i++)
@@ -165,12 +171,6 @@ public:
         }
         return sumArea;
     }
-
-    ~Holder()
-    {
-        delete[] m_lands;  
-    }
-
 };
 
 class CadastralChamber
@@ -179,13 +179,13 @@ private:
     std::string m_name;
     const size_t m_size;
     Holder* m_holders;
-
 public:
     CadastralChamber(std::string name, size_t size, Holder holders[])
         : m_name {name}, m_size{ size }, m_holders { holders }
     {
     }
-    double getArea()
+    
+    double getArea() const 
     {
         double sum{0};
         for (size_t i = 0; i < m_size; i++)
@@ -194,13 +194,22 @@ public:
         }
         return sum;
     }
+    double getHolderArea(size_t i) const { return m_holders[i].getArea(); }
+    std::string getHolderFIO(size_t i) const { return m_holders[i].getFIO(); } 
+    double getLandArea(size_t i, size_t j) const { return m_holders[i].getLandArea(j); }
+    LandType getLandType(size_t i, size_t j) const { return m_holders[i].getLandType(j); }
     void printAllHolders()
     {
         std::cout << "         Кадастровая палата \"" << m_name << "\"\n";
         for (size_t i = 0; i < m_size; i++)
         {
+            std::cout << "id:" << i << "  ";
             m_holders[i].printAllLands();
         };
+    }
+    void setLand(size_t i, size_t j, LandType type, double area)
+    {
+        m_holders[i].setLand(j, type, area);
     }
 
     ~CadastralChamber()
@@ -213,29 +222,23 @@ public:
 int main()
 {      
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
-    
-    /*Holder misterA(2);
-    misterA.setLand(0, 2, 5.0);
-    misterA.setLand(1, 1, 10.0);
-    misterA.printLands();
-    std::cout << '\n';*/
 
     Holder A("A", 3, new Land[3]{
-        Land(0, 5.0),
-        Land(1, 10.0),
-        Land(2, 15.0)
+        Land(LandType::circle, 5.0),
+        Land(LandType::rectangle, 10.0),
+        Land(LandType::square, 15.0)
     });
 
     Holder B("B", 3, true);
     Holder C("C", 5, true);
 
-    CadastralChamber Chamber("Chamber", 3, new Holder[3]{
-        A, B, C
+    CadastralChamber Chamber("Chamber", 4, new Holder[4]{
+        A,
+        B,
+        C,
+        Holder("C", 10, true)
     });
     Chamber.printAllHolders();
-
-    // TO DO:
-    // 1) класс земельной палаты
 
     return 0;
 }
