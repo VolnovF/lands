@@ -1,8 +1,13 @@
 #include <iostream>
 #include <string> 
-#include <vector>
+#include <memory> 
+#include <utility>
 #include <random>
 #include <ctime>
+
+class Land;
+class Holder;
+class CadastralChamber;
 
 enum class LandType
 {
@@ -22,36 +27,36 @@ int getRandomInt(int min, int max)
 class Land
 {
 private:
-    LandType m_type{LandType::maxTypes};
-    double m_area{};
+    LandType type{LandType::maxTypes};
+    double area{};
 public:
-    Land(LandType type, double area)
+    Land(): type{ LandType::maxTypes }, area{ 0 }
     {
-        setType(type);
-        setArea(area);
     }
-    Land(bool rand = 0): m_type{ LandType::maxTypes }, m_area{ 0 }
+    Land(LandType buf_type, double buf_area)
+    {
+        setType(buf_type);
+        setArea(buf_area);
+    }
+    Land(bool rand): type{ LandType::maxTypes }, area{ 0 }
     {
         if (rand)
         {
             randomize();
         }
     }
-    
+
     void randomize()
     {
 		setType( static_cast<LandType>(getRandomInt(0, static_cast<int>(LandType::maxTypes) - 1)) );
 		setArea( getRandomInt(1, 9999) / 100.0 );
     }
-    void setType(LandType type)
-    {
-        m_type = type;
-    }
+    void setType(LandType type) { this->type = type; }
     void setType(int type)
     {
         if (type < static_cast<int>(LandType::maxTypes))
         {
-                    m_type = static_cast<LandType>(type);
+                    this->type = static_cast<LandType>(type);
                     return;
         }
     }
@@ -59,11 +64,11 @@ public:
     {
         if (area >= 0)
         {
-            m_area = area;
+            this->area = area;
         }
     }
-    LandType getType() const { return m_type; }
-    double getArea() const { return m_area; }
+    LandType getType() const { return type; }
+    double getArea() const { return area; }
     void input()
     {
         std::cout << "Введите тип участка\n"
@@ -86,7 +91,7 @@ public:
     }
     void print() const
     {
-        switch ( static_cast<int>(m_type) )
+        switch ( static_cast<int>(type) )
         {
         case 0:
             std::cout << "Круглый ";
@@ -104,70 +109,151 @@ public:
             std::cout << "??? ";
             break;
         };
-        std::cout << "участок площадью " << m_area << " кв. км\n";
+        std::cout << "участок площадью " << area << " кв.км\n";
     }
 };
 
 class Holder
 {
+    friend class CadastralChamber;
 private:
-    std::string m_fio;
-    const size_t m_size;
-    Land* m_lands;
+    std::string fio;
+    size_t size;
+    Land** lands;
 public:
-    Holder(std::string fio, size_t size, bool rand = 0)
-        : m_fio {fio}, m_size{ size }, m_lands { new Land[size] }
+    Holder()
+        : fio { "" }, size{ 0 }, lands { nullptr }
     {
-        if (rand)
+    }
+    Holder(std::string buf_fio, size_t buf_size, bool rand = 0)
+        : fio {buf_fio}, size{ buf_size }, lands { new Land*[buf_size] }
+    {
+        for (size_t i = 0; i < size; i++)
         {
-            for (size_t i = 0; i < size; i++)
-            {
-                m_lands[i].randomize();
-            }
+            lands[i] = new Land(rand);
         }
     }
-    Holder(std::string fio, size_t size, Land lands[])
-        : m_fio {fio}, m_size{ size }, m_lands { lands }
+    Holder(std::string buf_fio, size_t buf_size, Land** buf_lands)
+        : fio {buf_fio}, size{ buf_size }, lands { new Land*[buf_size] }
     {
+        for (size_t i = 0; i < size; i++)
+        {
+            lands[i] = new Land(*buf_lands[i]);
+            delete buf_lands[i];
+        }
+        delete buf_lands;
+    }
+    
+    Holder(Holder&& r) noexcept
+        : fio{ r.fio }, size{ r.size }, lands{ r.lands }
+    {
+        r.lands = nullptr;
+        r.size = 0;
+    }
+    Holder& operator=(Holder&& r) noexcept
+    {
+        if (&r == this)
+            return *this;
+        if(lands)
+            this->~Holder();
+        fio = r.fio;
+        size = r.size;
+        lands = r.lands;
+        r.lands = nullptr;
+        r.size = 0;
+        return *this;
+    }
+    Holder(const Holder& l) noexcept
+        : fio{ l.fio }, size{ l.size }, lands { new Land*[l.size] }
+    {
+        for (size_t i = 0; i < size; i++)
+        {
+            lands[i] = new Land();
+            *lands[i] = *l.lands[i];
+        }
+    }
+    Holder& operator=(Holder& l) noexcept
+    {
+        if (&l == this)
+            return *this;
+        if(lands)
+            this->~Holder();
+        size = l.size;
+        lands = new Land*[size];
+        fio = l.fio;
+        for (size_t i = 0; i < size; i++)
+        {
+            lands[i] = new Land();
+            *lands[i] = *l.lands[i];
+        }
+        return *this;
+    }
+    
+    ~Holder()
+    {
+        if(!lands)
+        {
+            return;
+        }
+        for (size_t i = 0; i < size; i++)
+        {
+            delete lands[i];
+        }
+        delete lands;
+        size = 0;
     }
 
     void setLand(size_t i, LandType type, double area)
     {
-        m_lands[i].setType(type);
-        m_lands[i].setArea(area);
+        lands[i]->setType(type);
+        lands[i]->setArea(area);
     }
-    std::string getFIO() const { return m_fio; }
-    double getLandArea(size_t i) const { return m_lands[i].getArea(); }
-    LandType getLandType(size_t i) const { return m_lands[i].getType(); }
+    std::string getFIO() const { return fio; }
+    void setFIO(std::string fio) { this->fio = fio; }
+    size_t getSize() { return size; }
+    double getLandArea(size_t i) const 
+    { 
+        return lands[i]->getArea();
+    }
+    LandType getLandType(size_t i) const 
+    { 
+        return lands[i]->getType();
+    }
     void randomizeAllLands()
     {
-        for (size_t i = 0; i < m_size; i++)
+        for (size_t i = 0; i < size; i++)
         {
-			m_lands[i].randomize();
+			lands[i]->randomize();
 		};
     }
     void printAllLands() const
     {
-        std::cout << "Собственник " << m_fio << '\n';
-        for (size_t i = 0; i < m_size; i++)
+        if(!lands)
+        {
+            std::cout << "Собственник " << fio << " не найден\n";
+            return;
+        }
+        std::cout << "Собственник " << fio << '\n';
+        for (size_t i = 0; i < size; i++)
         {
             std::cout << '#' << i << ' ';
-            m_lands[i].print();
+            lands[i]->print();
         }
     }
     void inputAllLands()
     {
-        for (size_t i {0}; i < m_size; i++)
+        for (size_t i {0}; i < size; i++)
         {
-            m_lands[i].input();
+            lands[i]->input();
         }
     }
     double getArea() const
     {
+        if (!lands) {}
         double sumArea{0};
-        for (size_t i = 0; i < m_size; i++)
+        for (size_t i = 0; i < size; i++)
         {
-            sumArea += m_lands[i].getArea();
+            sumArea += lands[i]->getArea();
         }
         return sumArea;
     }
@@ -176,45 +262,113 @@ public:
 class CadastralChamber
 {
 private:
-    std::string m_name;
-    const size_t m_size;
-    Holder* m_holders;
+    std::string name;
+    size_t size;
+    Holder** holders;
 public:
-    CadastralChamber(std::string name, size_t size, Holder holders[])
-        : m_name {name}, m_size{ size }, m_holders { holders }
+    CadastralChamber(std::string buf_name, size_t buf_size, Holder** buf_holders)
+        : name {buf_name}, size{ buf_size }, holders { new Holder*[buf_size] }
     {
+        for (size_t i = 0; i < size; i++)
+        {
+            
+            holders[i] = new Holder();
+            *holders[i] = std::move(*buf_holders[i]);
+        }
+        delete[] buf_holders;
     }
     
-    double getArea() const 
+    CadastralChamber(CadastralChamber&& r) noexcept
+        : name{ r.name }, size{ r.size }, holders{ r.holders }
     {
-        double sum{0};
-        for (size_t i = 0; i < m_size; i++)
+        r.holders = nullptr;
+        r.size = 0;
+    }
+    CadastralChamber& operator=(CadastralChamber&& r) noexcept
+    {
+        if (&r == this)
+            return *this;
+        if(holders)
+            this->~CadastralChamber();
+        name = r.name;
+        size = r.size;
+        holders = r.holders;
+        r.holders = nullptr;
+        r.size = 0;
+        return *this;
+    }
+    CadastralChamber(const CadastralChamber& l) noexcept
+        : name{ l.name }, size{ l.size }, holders { new Holder*[l.size] }
+    {
+        for (size_t i = 0; i < size; i++)
         {
-            sum += m_holders[i].getArea();
+            holders[i] = new Holder();
+            *holders[i] = *l.holders [i];
         }
-        return sum;
     }
-    double getHolderArea(size_t i) const { return m_holders[i].getArea(); }
-    std::string getHolderFIO(size_t i) const { return m_holders[i].getFIO(); } 
-    double getLandArea(size_t i, size_t j) const { return m_holders[i].getLandArea(j); }
-    LandType getLandType(size_t i, size_t j) const { return m_holders[i].getLandType(j); }
-    void printAllHolders()
+    CadastralChamber& operator=(CadastralChamber& l) noexcept
     {
-        std::cout << "         Кадастровая палата \"" << m_name << "\"\n";
-        for (size_t i = 0; i < m_size; i++)
+        if (&l == this)
+            return *this;
+        if(holders)
+            this->~CadastralChamber();
+        size = l.size;       
+        name = l.name;
+        holders = new Holder*[size];
+        for (size_t i = 0; i < size; i++)
         {
-            std::cout << "id:" << i << "  ";
-            m_holders[i].printAllLands();
-        };
-    }
-    void setLand(size_t i, size_t j, LandType type, double area)
-    {
-        m_holders[i].setLand(j, type, area);
+            holders[i] = new Holder();
+            *holders[i] = *l.holders[i];
+        }
+        return *this;
     }
 
     ~CadastralChamber()
     {
-        delete[] m_holders;
+        if(!holders)
+        {
+            return;
+        }
+        for (size_t i = 0; i < size; i++)
+        {
+            delete holders[i];
+        }
+        delete holders;
+        size = 0;
+    }
+
+    double getArea() const 
+    {
+        double sum{0};
+        for (size_t i = 0; i < size; i++)
+        {
+            sum += holders[i]->getArea();
+        }
+        return sum;
+    }
+    std::string getName() const { return name; }
+    void setName(std::string name) { this->name = name; }
+    double getHolderArea(size_t i) const { return holders[i]->getArea(); }
+    std::string getHolderFIO(size_t i) const { return holders[i]->getFIO(); } 
+    double getLandArea(size_t i, size_t j) const { return holders[i]->getLandArea(j); }
+    LandType getLandType(size_t i, size_t j) const { return holders[i]->getLandType(j); }
+    void printAllHolders()
+    {
+        if(!holders)
+        {
+            std::cout << "         Кадастровая палата \"" << name << "\" не найдена\n";
+            return;
+        }
+        std::cout << "         Кадастровая палата \"" << name << "\"\n";
+        for (size_t i = 0; i < size; i++)
+        {
+            std::cout << "id:" << i << "  ";
+            holders[i]->printAllLands();
+        };
+    }
+    void setLand(size_t i, size_t j, LandType type, double area)
+    {
+        holders[i]->setLand(j, type, area);
     }
 };
 
@@ -222,23 +376,58 @@ public:
 int main()
 {      
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
+    std::cout << std::endl;
 
-    Holder A("A", 3, new Land[3]{
-        Land(LandType::circle, 5.0),
-        Land(LandType::rectangle, 10.0),
-        Land(LandType::square, 15.0)
+    Holder A("A", 3, new Land*[3]{
+        new Land(LandType::circle, 5.0),
+        new Land(LandType::rectangle, 10.0),
+        new Land(LandType::square, 15.0)
     });
-
     Holder B("B", 3, true);
     Holder C("C", 5, true);
+    
+    A.printAllLands();
+    std::cout << "Площадь земель собственника \"" << A.getFIO() << "\" = " 
+        << A.getArea() << " кв.км\n" ;
+    B.printAllLands();
+    std::cout << "Площадь земель собственника \"" << B.getFIO() << "\" = " 
+        << B.getArea() << " кв.км\n" ;
+    C.printAllLands();
+    std::cout << "Площадь земель собственника \"" << C.getFIO() << "\" = " 
+        << C.getArea() << " кв.км\n" ;
+    std::cout << std::endl;
 
-    CadastralChamber Chamber("Chamber", 4, new Holder[4]{
-        A,
-        B,
-        C,
-        Holder("C", 10, true)
+    CadastralChamber Chamber1("Chamber1", 4, new Holder*[4]{
+        &A,
+        &B,
+        &C,
+        new Holder("D", 10, true)
     });
-    Chamber.printAllHolders();
+    CadastralChamber Chamber2("Chamber2", 2, new Holder*[2]{
+        new Holder("1", 3, new Land*[3]{
+            new Land(LandType::circle, 5.0) ,
+            new Land(LandType::rectangle, 10.0),
+            new Land(LandType::square, 15.0)
+        }),
+        new Holder("2", 2, true)
+    });
+    CadastralChamber Chamber3{ std::move(Chamber2) };
+    Chamber3.setName("Chamber3");
+    CadastralChamber Chamber4{ Chamber3 };
+    Chamber4.setName("Chamber4");
+
+    Chamber1.printAllHolders();
+    std::cout << "Площадь земель палаты \"" << Chamber1.getName() << "\" = " 
+        << Chamber1.getArea() << " кв.км\n" ;
+    Chamber2.printAllHolders();
+    std::cout << "Площадь земель палаты \"" << Chamber2.getName() << "\" = " 
+        << Chamber2.getArea() << " кв.км\n" ;
+    Chamber3.printAllHolders();
+    std::cout << "Площадь земель палаты \"" << Chamber3.getName() << "\" = " 
+        << Chamber3.getArea() << " кв.км\n" ;
+    Chamber4.printAllHolders();
+    std::cout << "Площадь земель палаты \"" << Chamber4.getName() << "\" = " 
+        << Chamber4.getArea() << " кв.км\n" ;
 
     return 0;
 }
