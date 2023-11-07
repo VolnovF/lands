@@ -124,7 +124,7 @@ public:
         : fio { "" }, size{ 0 }, lands { nullptr }
     {
     }
-    Holder(std::string buf_fio, size_t buf_size, bool rand = 0)
+    Holder(std::string buf_fio, size_t buf_size, bool rand = false)
         : fio {buf_fio}, size{ buf_size }, lands { new Land*[buf_size] }
     {
         for (size_t i = 0; i < size; i++)
@@ -140,7 +140,7 @@ public:
             lands[i] = new Land(*buf_lands[i]);
             delete buf_lands[i];
         }
-        delete buf_lands;
+        delete[] buf_lands;
     }
     
     Holder(Holder&& r) noexcept
@@ -152,9 +152,13 @@ public:
     Holder& operator=(Holder&& r) noexcept
     {
         if (&r == this)
+        {
             return *this;
+        }
         if(lands)
+        {
             this->~Holder();
+        }
         fio = r.fio;
         size = r.size;
         lands = r.lands;
@@ -174,12 +178,16 @@ public:
     Holder& operator=(Holder& l) noexcept
     {
         if (&l == this)
+        {
             return *this;
+        }
         if(lands)
+        {
             this->~Holder();
+        }
         size = l.size;
-        lands = new Land*[size];
         fio = l.fio;
+        lands = new Land*[size];
         for (size_t i = 0; i < size; i++)
         {
             lands[i] = new Land();
@@ -198,7 +206,7 @@ public:
         {
             delete lands[i];
         }
-        delete lands;
+        delete[] lands;
         size = 0;
     }
 
@@ -232,7 +240,7 @@ public:
             std::cout << "Собственник " << fio << " не найден\n";
             return;
         }
-        std::cout << "Собственник " << fio << '\n';
+        std::cout << "Собственник " << fio <<'\n';
         for (size_t i = 0; i < size; i++)
         {
             std::cout << '#' << i << ' ';
@@ -248,7 +256,6 @@ public:
     }
     double getArea() const
     {
-        if (!lands) {}
         double sumArea{0};
         for (size_t i = 0; i < size; i++)
         {
@@ -286,9 +293,13 @@ public:
     CadastralChamber& operator=(CadastralChamber&& r) noexcept
     {
         if (&r == this)
+        {
             return *this;
+        }
         if(holders)
+        {
             this->~CadastralChamber();
+        }
         name = r.name;
         size = r.size;
         holders = r.holders;
@@ -308,9 +319,13 @@ public:
     CadastralChamber& operator=(CadastralChamber& l) noexcept
     {
         if (&l == this)
+        {
             return *this;
+        }
         if(holders)
+        {
             this->~CadastralChamber();
+        }
         size = l.size;       
         name = l.name;
         holders = new Holder*[size];
@@ -332,7 +347,7 @@ public:
         {
             delete holders[i];
         }
-        delete holders;
+        delete[] holders;
         size = 0;
     }
 
@@ -383,7 +398,10 @@ int main()
         new Land(LandType::square, 15.0)
     });
     Holder B("B", 3, true);
-    Holder C("C", 5, true);
+    Holder C{ A };
+    C.setFIO("C");
+    Holder D{ std::move(A) };
+    D.setFIO("D");
     
     A.printAllLands();
     std::cout << "Площадь земель собственника \"" << A.getFIO() << "\" = " 
@@ -394,15 +412,19 @@ int main()
     C.printAllLands();
     std::cout << "Площадь земель собственника \"" << C.getFIO() << "\" = " 
         << C.getArea() << " кв.км\n" ;
+    D.printAllLands();
+    std::cout << "Площадь земель собственника \"" << D.getFIO() << "\" = " 
+        << D.getArea() << " кв.км\n" ;
     std::cout << std::endl;
 
-    CadastralChamber Chamber1("Chamber1", 4, new Holder*[4]{
+    CadastralChamber Chamber1("Chamber_1", 5, new Holder*[5]{
         &A,
         &B,
         &C,
-        new Holder("D", 10, true)
+        &D,
+        new Holder("E", 10, true)
     });
-    CadastralChamber Chamber2("Chamber2", 2, new Holder*[2]{
+    CadastralChamber Chamber2("Chamber_2", 2, new Holder*[2]{
         new Holder("1", 3, new Land*[3]{
             new Land(LandType::circle, 5.0) ,
             new Land(LandType::rectangle, 10.0),
@@ -410,10 +432,10 @@ int main()
         }),
         new Holder("2", 2, true)
     });
-    CadastralChamber Chamber3{ std::move(Chamber2) };
-    Chamber3.setName("Chamber3");
-    CadastralChamber Chamber4{ Chamber3 };
-    Chamber4.setName("Chamber4");
+    CadastralChamber Chamber3{ Chamber2 };
+    Chamber3.setName("Chamber_3");
+    CadastralChamber Chamber4{ std::move(Chamber2) };
+    Chamber4.setName("Chamber_4");
 
     Chamber1.printAllHolders();
     std::cout << "Площадь земель палаты \"" << Chamber1.getName() << "\" = " 
@@ -427,6 +449,7 @@ int main()
     Chamber4.printAllHolders();
     std::cout << "Площадь земель палаты \"" << Chamber4.getName() << "\" = " 
         << Chamber4.getArea() << " кв.км\n" ;
+    std::cout << std::endl;
 
     return 0;
 }
