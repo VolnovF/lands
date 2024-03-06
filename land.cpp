@@ -24,7 +24,15 @@ std::ostream& operator<< (std::ostream &out, const Land &land)
     return out;
 }
 
-unsigned int Land::getCadastralID()
+Land::~Land()
+{
+    if(cadastralID)
+    {
+        map.erase(cadastralID);
+    }
+}
+
+unsigned int Land::getCadastralID() const
 {
     return cadastralID;
 }
@@ -39,6 +47,19 @@ bool Land::registrate()
     {
         cadastralID = nextUniqueID;
         nextUniqueID++;
+        map[cadastralID] = this;
         return true;
+    }
+}
+
+Land *Land::fromCadastaralID(unsigned int id)
+{
+    if (map.count(id))
+    {
+        return map[id];
+    }
+    else
+    {
+        return nullptr;
     }
 }
