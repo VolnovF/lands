@@ -1,24 +1,30 @@
-#ifndef HOLDER_H
+ #ifndef HOLDER_H
 #define HOLDER_H
 
 #include <string>
-#include <map>
+#include <vector>
+
+#include "land.h"
 
 class Holder
 {
 private:
-    std::string fio;
-    unsigned int passport;
-    static inline unsigned int nextUniqueID{1};
-    static inline std::map<unsigned int,Holder*> map{};
-public:
-    Holder(std::string c_fio);
-    ~Holder();
+    std::string m_fio;
+    unsigned int m_passport;
+    static inline unsigned int counter{1};
+    std::vector<std::reference_wrapper<const Land>> m_lands;
 
-    std::string getFio() const;
+    unsigned int nextUniqueID();
+
+public:
+    Holder(std::string fio);
+
+    bool addLand(Land& land, Fraction part);
     void setFio(std::string fio);
-    unsigned int getPassport() const;
-    static Holder* fromPassport(unsigned int id);
+    std::string getFio() const;
+    long double getArea();
+
+    ~Holder() = default;
 };
 
 #endif // HOLDER_H

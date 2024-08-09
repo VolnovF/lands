@@ -1,37 +1,30 @@
 #include "rectangle.h"
 
-Rectangle::Rectangle()
-    : width{0}, height{0}
+Rectangle::Rectangle(double width, double height)
+    : m_width{width}, m_height{height}
 {}
 
-Rectangle::Rectangle(double width, double height)
+void Rectangle::setWidth(double width)
 {
-    this->width = width;
-    this->height = height;
+    m_width = width;
 }
 
-void Rectangle::setSides(double width, double height)
+void Rectangle::setHeight(double height)
 {
-    this->width = width;
-    this->height = height;
+    m_height = height;
 }
 
 double Rectangle::getWidth() const
 {
-    return width;
+    return m_width;
 }
 
 double Rectangle::getHeight() const
 {
-    return height;
-}
-
-LandType Rectangle::getType() const
-{
-    return LandType::rectangle;
+    return m_height;
 }
 
 double Rectangle::getArea() const
 {
-    return width*height;
+    return m_width * m_height;
 }

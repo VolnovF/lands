@@ -1,42 +1,55 @@
 #include "holder.h"
 
-Holder::Holder(std::string c_fio)
-    : fio{c_fio}, passport{nextUniqueID}
+unsigned int Holder::nextUniqueID()
 {
-    nextUniqueID++;
-    map[passport] = this;
+    return counter++;
 }
 
-Holder::~Holder()
+Holder::Holder(std::string fio)
+    : m_fio{fio}
 {
-    map.erase(passport);
+    m_passport = nextUniqueID();
+}
+
+bool Holder::addLand(Land &land, Fraction part)
+{
+    if (land.addHolder(m_passport, part))
+    {
+        m_lands.push_back(land);
+    }
+    else
+    {
+        return false;
+    }
 }
 
 std::string Holder::getFio() const
 {
-    return fio;
+    return m_fio;
+}
+
+long double Holder::getArea()
+{
+    long double sum {0};
+    for (auto land : m_lands)
+    {
+        sum += land.get().getHolderArea(m_passport);
+    };
+    return sum;
 }
 
 void Holder::setFio(std::string fio)
 {
-    this->fio = fio;
+    m_fio = fio;
 }
 
-unsigned int Holder::getPassport() const
+
+bool Land::addHolder(unsigned int passport, Fraction part)
 {
-    return passport;
-}
-
-Holder *Holder::fromPassport(unsigned int id)
-{
-    if (map.count(id))
+    if(sumParts() + part.value() > 1)
     {
-        return map[id];
+        return false;
     }
-    else
-    {
-        return nullptr;
-    }
+    m_holders.insert(std::make_pair(passport, part));
+    return true;
 }
-
-

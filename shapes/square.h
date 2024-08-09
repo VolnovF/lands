@@ -1,18 +1,19 @@
 #ifndef SQUARE_H
 #define SQUARE_H
 
-#include "../land.h"
+#include "shape.h"
 
-class Square : public Land
+class Square : public Shape
 {
 private:
-    double side;
+    double m_side;
+
 public:
-    Square();
     Square(double side);
+
     void setSide(double side);
     double getSide() const;
-    LandType getType() const override;
+
     double getArea() const override;
 };
 

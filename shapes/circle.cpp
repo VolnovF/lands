@@ -1,30 +1,20 @@
 #include "circle.h"
 
-Circle::Circle()
-    : diameter{0}
-{}
-
 Circle::Circle(double diameter)
-{
-    this->diameter = diameter;
-}
+    : Shape(), m_diameter{diameter}
+{}
 
 void Circle::setDiameter(double diameter)
 {
-    this->diameter = diameter;
+    m_diameter = diameter;
 }
 
 double Circle::getDiameter() const
 {
-    return diameter;
-}
-
-LandType Circle::getType() const
-{
-    return LandType::circle;
+    return m_diameter;
 }
 
 double Circle::getArea() const
 {
-    return M_PI * std::pow(diameter/2, 2);
+    return M_PI * std::pow(m_diameter/2, 2);
 }

@@ -1,44 +1,36 @@
 #include <iostream>
 
-#include "shapes/triangle.h"
 #include "shapes/circle.h"
 #include "shapes/rectangle.h"
 #include "shapes/square.h"
+#include "shapes/triangle.h"
+
+#include "land.h"
 #include "holder.h"
-#include "landchamber.h"
 
 int main()
 {
-    Triangle l1 = Triangle(5, 4, 3);
-    Circle l2 = Circle(6.0);
-    Rectangle l3 = Rectangle(4, 3);
-    Square ld4 = Square(3);
+    Land l1 {"ул.Ленина 184", new Triangle(500, 40, 300)};
+    Land l2 {"ул.Ленина 184", new Circle(600.0)};
+    Land l3 {"ул.Ленина 184", new Rectangle(40, 30)};
+    Land l4 {"ул.Ленина 184", new Square(300)};
 
     Holder h1{"Иванов Иван Иванович"};
     Holder h2{"Константин Сергеевич"};
     Holder h3{"Антон"};
 
-    LandChamber chamber;
-    chamber.registrateOwnership(&l1, &h1);
-    chamber.registrateOwnership(&l1, &h1);
-    chamber.registrateOwnership(&l2, &h2);
-    chamber.registrateOwnership(&l2, &h3);
-    chamber.registrateOwnership(&l3, &h3);
+    h1.addLand(l1, Fraction(1,3));
+    h2.addLand(l1, Fraction(1,3));
+    h3.addLand(l1, Fraction(1,3));
 
-    auto vector = chamber.allOwnerships();
+    h1.addLand(l2, Fraction(2,3));
+    h2.addLand(l2, Fraction(1,3));
 
-    for (auto i : chamber.allOwnerships())
-    {
-        std::cout << "Гражданин №" << i.holder << " владеет участком №" << i.land << '\n' ;
-    }
-    Land *l_ptr{ Land::fromCadastaralID(vector[0].land) };
-    if(l_ptr)
-    {
-        std::cout << "Участок №" << l_ptr->getCadastralID() << " площадью " << l_ptr->getArea() << " получен по кадастровому номеру" << '\n' ;
-    }
-    Holder *h_ptr{ Holder::fromPassport(vector[0].holder) };
-    if(h_ptr)
-    {
-        std::cout << "Гражданин " << h_ptr->getFio() << " получен по номеру паспорта" << '\n' ;
-    }
+    h3.addLand(l3, Fraction(1));
+
+    h1.addLand(l4, Fraction(2,3));
+
+    std::cout << h1.getFio() << "Владеет " << h1.getArea() << " кв.м земли\n" ;
+    std::cout << h2.getFio() << "Владеет " << h2.getArea() << " кв.м земли\n" ;
+    std::cout << h3.getFio() << "Владеет " << h3.getArea() << " кв.м земли\n" ;
 }

@@ -2,33 +2,32 @@
 #define LAND_H
 
 #include <iostream>
+#include <string>
 #include <map>
 
-enum class LandType
-{
-    circle,
-    triangle,
-    square,
-    rectangle,
-    maxTypes
-};
+#include "shape.h"
+#include "fraction.h"
+
+class Holder;
 
 class Land
 {
 private:
-    unsigned int cadastralID{0};
-    static inline unsigned nextUniqueID{1};
-    static inline std::map<unsigned int,Land*> map{};
+    std::string m_addres;
+    Shape* m_shape;
+    std::map<unsigned int,Fraction> m_holders;
 
 public:
-    friend std::ostream& operator<< (std::ostream &out, const Land &land);
-    virtual ~Land();
+    Land(const std::string& addres, Shape* shape);
 
-    virtual LandType getType() const = 0;
-    virtual double getArea() const = 0;
-    unsigned int getCadastralID() const;
-    bool registrate();
-    static Land* fromCadastaralID(unsigned int id);
+    void setShape(Shape* shape);
+    double getArea() const;
+    long double getHolderArea(unsigned int passport) const;
+    double sumParts() const;
+
+    ~Land();
+
+    bool addHolder(unsigned int passport, Fraction part);
 };
 
 #endif // LAND_H

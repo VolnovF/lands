@@ -1,65 +1,45 @@
 #include "land.h"
 
-std::ostream& operator<< (std::ostream &out, const Land &land)
+Land::Land(const std::string& addres, Shape* shape)
+    : m_addres{addres}, m_shape{shape}
+{}
+
+void Land::setShape(Shape* shape)
 {
-    switch ( land.getType() )
+    delete m_shape;
+    m_shape = shape;
+}
+
+double Land::getArea() const
+{
+    return m_shape->getArea();
+}
+
+long double Land::getHolderArea(unsigned int passport) const
+{
+    auto holder {m_holders.find(passport)};
+    if (holder == m_holders.end())
     {
-    case LandType::circle:
-        out << "Круглый";
-        break;
-    case LandType::triangle:
-        out << "Треугольный";
-        break;
-    case LandType::square:
-        out << "Квадратный";
-        break;
-    case LandType::rectangle:
-        out << "Прямоугольный";
-        break;
-    default:
-        out << "???";
-        break;
+        return 0;
+    }
+    else
+    {
+        return m_shape->getArea() * holder->second.long_value();
+    }
+}
+
+double Land::sumParts() const
+{
+    double sum {0};
+    for (auto const& [passport, part] : m_holders)
+    {
+        sum += part.value();
     };
-    out << " участок площадью " << land.getArea() << " кв.м";
-    return out;
+    return sum;
 }
 
 Land::~Land()
 {
-    if(cadastralID)
-    {
-        map.erase(cadastralID);
-    }
+    delete m_shape;
 }
 
-unsigned int Land::getCadastralID() const
-{
-    return cadastralID;
-}
-
-bool Land::registrate()
-{
-    if(cadastralID)
-    {
-        return false;
-    }
-    else
-    {
-        cadastralID = nextUniqueID;
-        nextUniqueID++;
-        map[cadastralID] = this;
-        return true;
-    }
-}
-
-Land *Land::fromCadastaralID(unsigned int id)
-{
-    if (map.count(id))
-    {
-        return map[id];
-    }
-    else
-    {
-        return nullptr;
-    }
-}

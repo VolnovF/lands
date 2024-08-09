@@ -1,20 +1,23 @@
 #ifndef TRIANGLE_H
 #define TRIANGLE_H
 
-#include "../land.h"
+#include "shape.h"
 
-class Triangle : public Land
+class Triangle : public Shape
 {
 private:
-    double a, b, c;
+    double m_a, m_b, m_c;
+
 public:
-    Triangle();
     Triangle(double constr_a, double constr_b, double constr_c);
-    void setSides(double a, double b, double c);
+
+    void setA(double a);
     double getA() const;
+    void setB(double b);
     double getB() const;
+    void setC(double c);
     double getC() const;
-    LandType getType() const override;
+
     double getArea() const override;
 
 };

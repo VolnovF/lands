@@ -1,44 +1,42 @@
 #include "math.h"
 #include "triangle.h"
 
-Triangle::Triangle()
-    : a{0}, b{0}, c{0}
-{}
 Triangle::Triangle(double a, double b, double c)
-{
-    this->a = a;
-    this->b = b;
-    this->c = c;
-}
+    : m_a{a}, m_b{b}, m_c{c}
+{}
 
-void Triangle::setSides(double a, double b, double c)
+void Triangle::setA(double a)
 {
-    this->a = a;
-    this->b = b;
-    this->c = c;
+    m_a = a;
 }
 
 double Triangle::getA() const
 {
-    return a;
+    return m_a;
+}
+
+void Triangle::setB(double b)
+{
+    m_b = b;
 }
 double Triangle::getB() const
 {
-    return b;
+    return m_b;
+}
+
+void Triangle::setC(double c)
+{
+    m_c = c;
 }
 double Triangle::getC() const
 {
-    return c;
+    return m_c;
 }
 
-LandType Triangle::getType() const
-{
-    return LandType::triangle;
-}
 double Triangle::getArea() const
 {
-    double s{ (a+b+c)/2 };
-    return std::sqrt( s*(s-a)*(s-b)*(s-c) );
+    double s{ (m_a + m_b + m_c)/2 };
+    return std::sqrt( s * (s-m_a) * (s-m_b) * (s-m_c) );
 }
 
 

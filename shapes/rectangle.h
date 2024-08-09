@@ -1,19 +1,21 @@
 #ifndef RECTANGLE_H
 #define RECTANGLE_H
 
-#include "../land.h"
+#include "shape.h"
 
-class Rectangle : public Land
+class Rectangle : public Shape
 {
 private:
-    double width, height;
+    double m_width, m_height;
+
 public:
-    Rectangle();
     Rectangle(double width, double height);
-    void setSides(double width, double height);
+
+    void setWidth(double width);
+    void setHeight(double height);
     double getWidth() const;
     double getHeight() const;
-    LandType getType() const override;
+
     double getArea() const override;
 };
 
