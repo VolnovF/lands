@@ -6,16 +6,16 @@ unsigned int Holder::nextUniqueID()
 }
 
 Holder::Holder(std::string fio)
-    : m_fio{fio}
+    : _fio{fio}
 {
-    m_passport = nextUniqueID();
+    _passport = nextUniqueID();
 }
 
-bool Holder::addLand(Land &land, Fraction part)
+bool Holder::addLand(Land* land, Fraction part)
 {
-    if (land.addHolder(m_passport, part))
+    if (land->addHolder(_passport, part))
     {
-        m_lands.push_back(land);
+        _lands.push_back(land);
     }
     else
     {
@@ -25,22 +25,22 @@ bool Holder::addLand(Land &land, Fraction part)
 
 std::string Holder::getFio() const
 {
-    return m_fio;
+    return _fio;
 }
 
 long double Holder::getArea()
 {
     long double sum {0};
-    for (auto land : m_lands)
+    for (auto land : _lands)
     {
-        sum += land.get().getHolderArea(m_passport);
+        sum += land->getHolderArea(_passport);
     };
     return sum;
 }
 
 void Holder::setFio(std::string fio)
 {
-    m_fio = fio;
+    _fio = fio;
 }
 
 
@@ -50,6 +50,6 @@ bool Land::addHolder(unsigned int passport, Fraction part)
     {
         return false;
     }
-    m_holders.insert(std::make_pair(passport, part));
+    _holders.insert(std::make_pair(passport, part));
     return true;
 }

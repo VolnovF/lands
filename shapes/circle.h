@@ -7,7 +7,7 @@
 class Circle : public Shape
 {
 private:
-    double m_diameter;
+    double _diameter;
 
 public:
     Circle(double diameter);

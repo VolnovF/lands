@@ -10,27 +10,32 @@
 
 int main()
 {
-    Land l1 {"ул.Ленина 184", new Triangle(500, 40, 300)};
-    Land l2 {"ул.Ленина 184", new Circle(600.0)};
-    Land l3 {"ул.Ленина 184", new Rectangle(40, 30)};
-    Land l4 {"ул.Ленина 184", new Square(300)};
+    Land triangle {"ул.Ленина 181", new Triangle(500, 400, 300)};
+    Land circle {"ул.Ленина 182", new Circle(600.0)};
+    Land rectangle {"ул.Ленина 183", new Rectangle(40, 30)};
+    Land square {"ул.Ленина 184", new Square(300)};
 
-    Holder h1{"Иванов Иван Иванович"};
-    Holder h2{"Константин Сергеевич"};
-    Holder h3{"Антон"};
+    Holder ivan{"Иванов Иван Иванович"};
+    Holder konstantin{"Константин Сергеевич"};
+    Holder anton{"Антон"};
 
-    h1.addLand(l1, Fraction(1,3));
-    h2.addLand(l1, Fraction(1,3));
-    h3.addLand(l1, Fraction(1,3));
+    ivan.addLand(&triangle, Fraction(1,3));
+    konstantin.addLand(&triangle, Fraction(1,3));
+    anton.addLand(&triangle, Fraction(1,3));
 
-    h1.addLand(l2, Fraction(2,3));
-    h2.addLand(l2, Fraction(1,3));
+    ivan.addLand(&circle, Fraction(2,3));
+    konstantin.addLand(&circle, Fraction(1,3));
 
-    h3.addLand(l3, Fraction(1));
+    anton.addLand(&rectangle, Fraction(1));
 
-    h1.addLand(l4, Fraction(2,3));
+    ivan.addLand(&square, Fraction(2,3));
 
-    std::cout << h1.getFio() << "Владеет " << h1.getArea() << " кв.м земли\n" ;
-    std::cout << h2.getFio() << "Владеет " << h2.getArea() << " кв.м земли\n" ;
-    std::cout << h3.getFio() << "Владеет " << h3.getArea() << " кв.м земли\n" ;
+    std::cout << triangle.getAddres() << " площадью " << triangle.getArea() << " кв.м земли\n" ;
+    std::cout << circle.getAddres() << " площадью " << circle.getArea() << " кв.м земли\n" ;
+    std::cout << rectangle.getAddres() << " площадью " << rectangle.getArea() << " кв.м земли\n" ;
+    std::cout << square.getAddres() << " площадью " << square.getArea() << " кв.м земли\n" ;
+    std::cout << "\n" ;
+    std::cout << ivan.getFio() << " владеет " << ivan.getArea() << " кв.м земли\n" ;
+    std::cout << konstantin.getFio() << " владеет " << konstantin.getArea() << " кв.м земли\n" ;
+    std::cout << anton.getFio() << " владеет " << anton.getArea() << " кв.м земли\n" ;
 }

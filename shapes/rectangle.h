@@ -6,7 +6,7 @@
 class Rectangle : public Shape
 {
 private:
-    double m_width, m_height;
+    double _width, _height;
 
 public:
     Rectangle(double width, double height);

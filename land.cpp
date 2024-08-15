@@ -1,37 +1,56 @@
 #include "land.h"
 
 Land::Land(const std::string& addres, Shape* shape)
-    : m_addres{addres}, m_shape{shape}
+    : _addres{addres}, _shape{shape}
 {}
+
+void Land::setAddres(const std::string& addres)
+{
+    _addres = addres;
+}
 
 void Land::setShape(Shape* shape)
 {
-    delete m_shape;
-    m_shape = shape;
+    delete _shape;
+    _shape = shape;
+}
+
+const std::string& Land::getAddres() const
+{
+    return _addres;
 }
 
 double Land::getArea() const
 {
-    return m_shape->getArea();
+    return _shape->getArea();
+}
+
+const Fraction* Land::getFraction(unsigned int passport) const
+{
+    auto holder {_holders.find(passport)};
+    if (holder == _holders.end())
+    {
+        return nullptr;
+    }
+    return &(holder->second);
 }
 
 long double Land::getHolderArea(unsigned int passport) const
 {
-    auto holder {m_holders.find(passport)};
-    if (holder == m_holders.end())
-    {
-        return 0;
-    }
-    else
-    {
-        return m_shape->getArea() * holder->second.long_value();
-    }
+    const Fraction* fraction {getFraction(passport)};
+    if (!fraction) { return 0; }
+    return _shape->getArea() * fraction->long_value();
+}
+
+const std::map<unsigned int, Fraction>& Land::getHolders() const
+{
+    return _holders;
 }
 
 double Land::sumParts() const
 {
     double sum {0};
-    for (auto const& [passport, part] : m_holders)
+    for (auto const& [passport, part] : _holders)
     {
         sum += part.value();
     };
@@ -40,6 +59,6 @@ double Land::sumParts() const
 
 Land::~Land()
 {
-    delete m_shape;
+    delete _shape;
 }
 

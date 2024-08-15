@@ -2,41 +2,41 @@
 #include "triangle.h"
 
 Triangle::Triangle(double a, double b, double c)
-    : m_a{a}, m_b{b}, m_c{c}
+    : _a{a}, _b{b}, _c{c}
 {}
 
 void Triangle::setA(double a)
 {
-    m_a = a;
+    _a = a;
 }
 
 double Triangle::getA() const
 {
-    return m_a;
+    return _a;
 }
 
 void Triangle::setB(double b)
 {
-    m_b = b;
+    _b = b;
 }
 double Triangle::getB() const
 {
-    return m_b;
+    return _b;
 }
 
 void Triangle::setC(double c)
 {
-    m_c = c;
+    _c = c;
 }
 double Triangle::getC() const
 {
-    return m_c;
+    return _c;
 }
 
 double Triangle::getArea() const
 {
-    double s{ (m_a + m_b + m_c)/2 };
-    return std::sqrt( s * (s-m_a) * (s-m_b) * (s-m_c) );
+    double p{ (_a + _b + _c)/2 };
+    return std::sqrt( p * (p-_a) * (p-_b) * (p-_c) );
 }
 
 

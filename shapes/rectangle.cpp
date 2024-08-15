@@ -1,30 +1,30 @@
 #include "rectangle.h"
 
 Rectangle::Rectangle(double width, double height)
-    : m_width{width}, m_height{height}
+    : _width{width}, _height{height}
 {}
 
 void Rectangle::setWidth(double width)
 {
-    m_width = width;
+    _width = width;
 }
 
 void Rectangle::setHeight(double height)
 {
-    m_height = height;
+    _height = height;
 }
 
 double Rectangle::getWidth() const
 {
-    return m_width;
+    return _width;
 }
 
 double Rectangle::getHeight() const
 {
-    return m_height;
+    return _height;
 }
 
 double Rectangle::getArea() const
 {
-    return m_width * m_height;
+    return _width * _height;
 }

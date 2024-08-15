@@ -6,7 +6,7 @@
 class Triangle : public Shape
 {
 private:
-    double m_a, m_b, m_c;
+    double _a, _b, _c;
 
 public:
     Triangle(double constr_a, double constr_b, double constr_c);
