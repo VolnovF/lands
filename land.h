@@ -9,6 +9,10 @@
 #include "shape.h"
 #include "fraction.h"
 
+using HolderIterator = std::map<unsigned int,Fraction>::iterator;
+using HolderConstIterator = std::map<unsigned int,Fraction>::const_iterator;
+using HolderAndPart = std::pair<unsigned int,Fraction>;
+
 class Holder;
 
 class Land
@@ -31,8 +35,8 @@ public:
     const std::string& getAddres() const;
     const IShape* getShape();
     double getArea() const;
-    const Fraction* getFraction(unsigned int passport) const;
-    long double getHolderArea(unsigned int passport) const;
+    const Fraction* getPart(unsigned int passport) const;
+    double getHolderArea(unsigned int passport) const;
     const std::map<unsigned int,Fraction>& getHolders() const;
 
     double sumParts() const;

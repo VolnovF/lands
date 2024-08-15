@@ -26,7 +26,7 @@ std::string Holder::getFio() const
 long double Holder::getArea()
 {
     long double sum {0};
-    for (auto land : _lands)
+    for (Land* land : _lands)
     {
         sum += land->getHolderArea(_passport);
     };
@@ -50,10 +50,9 @@ bool Holder::addLand(Land* land, Fraction part)
 
 bool Land::addHolder(unsigned int passport, Fraction part)
 {
-    if(sumParts() + part.value() > 1)
-    {
-        return false;
-    }
+    if(part <= 0.0) { return false;}
+    if(sumParts() + part.value() > 1) { return false; }
+    part.calculeteArea(getArea());
     _holders.insert(std::make_pair(passport, part));
     return true;
 }

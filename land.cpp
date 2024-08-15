@@ -8,6 +8,7 @@ Land::Land(Land&& other)
 {
     _addres = std::move(other._addres);
     _shape = other._shape;
+    other._shape = nullptr;
     _holders = std::move(other._holders);
 }
 
@@ -20,6 +21,10 @@ void Land::setShape(IShape* shape)
 {
     delete _shape;
     _shape = shape;
+    for (HolderAndPart pair : _holders)
+    {
+        pair.second.calculeteArea(_shape->getArea());
+    }
 }
 
 const std::string& Land::getAddres() const
@@ -37,9 +42,9 @@ double Land::getArea() const
     return _shape->getArea();
 }
 
-const Fraction* Land::getFraction(unsigned int passport) const
+const Fraction* Land::getPart(unsigned int passport) const
 {
-    auto holder {_holders.find(passport)};
+    HolderConstIterator holder {_holders.find(passport)};
     if (holder == _holders.end())
     {
         return nullptr;
@@ -47,11 +52,11 @@ const Fraction* Land::getFraction(unsigned int passport) const
     return &(holder->second);
 }
 
-long double Land::getHolderArea(unsigned int passport) const
+double Land::getHolderArea(unsigned int passport) const
 {
-    const Fraction* fraction {getFraction(passport)};
+    const Fraction* fraction {getPart(passport)};
     if (!fraction) { return 0; }
-    return _shape->getArea() * fraction->long_value();
+    return fraction->getArea();
 }
 
 const std::map<unsigned int, Fraction>& Land::getHolders() const
@@ -62,9 +67,9 @@ const std::map<unsigned int, Fraction>& Land::getHolders() const
 double Land::sumParts() const
 {
     double sum {0};
-    for (auto const& [passport, part] : _holders)
+    for (HolderAndPart pair : _holders)
     {
-        sum += part.value();
+        sum += pair.second.value();
     };
     return sum;
 }
