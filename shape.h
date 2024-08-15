@@ -8,7 +8,7 @@ protected:
     Shape() = default;
 
 public:
-    virtual double getArea() const;
+    virtual double getArea() const = 0;
 
     virtual ~Shape() = default;
 };

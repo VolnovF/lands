@@ -13,14 +13,12 @@ Holder::Holder(std::string fio)
 
 bool Holder::addLand(Land* land, Fraction part)
 {
-    if (land->addHolder(_passport, part))
+    bool result{ land->addHolder(_passport, part) };
+    if (result)
     {
         _lands.push_back(land);
     }
-    else
-    {
-        return false;
-    }
+    return result;
 }
 
 std::string Holder::getFio() const
