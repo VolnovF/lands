@@ -3,7 +3,7 @@
 
 #include "shape.h"
 
-class Rectangle : public Shape
+class Rectangle : public IShape
 {
 private:
     double _width, _height;

@@ -3,7 +3,7 @@
 
 #include "shape.h"
 
-class Square : public Shape
+class Square : public IShape
 {
 private:
     double _side;

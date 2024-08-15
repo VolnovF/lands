@@ -2,15 +2,15 @@
 #define SHAPE_H
 
 
-class Shape
+class IShape
 {
 protected:
-    Shape() = default;
+    IShape() = default;
 
 public:
     virtual double getArea() const = 0;
 
-    virtual ~Shape() = default;
+    virtual ~IShape() = default;
 };
 
 #endif // SHAPE_H

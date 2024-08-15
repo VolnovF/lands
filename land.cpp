@@ -1,6 +1,6 @@
 #include "land.h"
 
-Land::Land(const std::string& addres, Shape* shape)
+Land::Land(const std::string& addres, IShape* shape)
     : _addres{addres}, _shape{shape}
 {}
 
@@ -9,7 +9,7 @@ void Land::setAddres(const std::string& addres)
     _addres = addres;
 }
 
-void Land::setShape(Shape* shape)
+void Land::setShape(IShape* shape)
 {
     delete _shape;
     _shape = shape;

@@ -1,7 +1,7 @@
 #include "circle.h"
 
 Circle::Circle(double diameter)
-    : Shape(), _diameter{diameter}
+    : _diameter{diameter}
 {}
 
 void Circle::setDiameter(double diameter)

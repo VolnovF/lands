@@ -13,15 +13,15 @@ class Holder;
 class Land
 {
 private:
-    Shape* _shape;
+    IShape* _shape;
     std::string _addres;
     std::map<unsigned int,Fraction> _holders;
 
 public:
-    Land(const std::string& addres, Shape* shape);
+    Land(const std::string& addres, IShape* shape);
 
     void setAddres(const std::string& addres);
-    void setShape(Shape* shape);
+    void setShape(IShape* shape);
 
     const std::string& getAddres() const;
     double getArea() const;

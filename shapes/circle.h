@@ -4,7 +4,7 @@
 #include "shape.h"
 #include "math.h"
 
-class Circle : public Shape
+class Circle : public IShape
 {
 private:
     double _diameter;
