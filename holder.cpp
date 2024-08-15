@@ -11,14 +11,11 @@ Holder::Holder(std::string fio)
     _passport = nextUniqueID();
 }
 
-bool Holder::addLand(Land* land, Fraction part)
+Holder::Holder(Holder &&other)
 {
-    bool result{ land->addHolder(_passport, part) };
-    if (result)
-    {
-        _lands.push_back(land);
-    }
-    return result;
+    _fio = std::move(other._fio);
+    _passport = other._passport;
+    _lands = std::move(other._lands);
 }
 
 std::string Holder::getFio() const
@@ -41,6 +38,15 @@ void Holder::setFio(std::string fio)
     _fio = fio;
 }
 
+bool Holder::addLand(Land* land, Fraction part)
+{
+    bool result{ land->addHolder(_passport, part) };
+    if (result)
+    {
+        _lands.push_back(land);
+    }
+    return result;
+}
 
 bool Land::addHolder(unsigned int passport, Fraction part)
 {

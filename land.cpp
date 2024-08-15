@@ -1,8 +1,15 @@
 #include "land.h"
 
 Land::Land(const std::string& addres, IShape* shape)
-    : _addres{addres}, _shape{shape}
+    : _shape{shape}, _addres{addres}
 {}
+
+Land::Land(Land&& other)
+{
+    _addres = std::move(other._addres);
+    _shape = other._shape;
+    _holders = std::move(other._holders);
+}
 
 void Land::setAddres(const std::string& addres)
 {
@@ -18,6 +25,11 @@ void Land::setShape(IShape* shape)
 const std::string& Land::getAddres() const
 {
     return _addres;
+}
+
+const IShape *Land::getShape()
+{
+    return _shape;
 }
 
 double Land::getArea() const

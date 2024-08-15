@@ -2,6 +2,7 @@
 #define LAND_H
 
 #include <iostream>
+#include <utility>
 #include <string>
 #include <map>
 
@@ -19,11 +20,16 @@ private:
 
 public:
     Land(const std::string& addres, IShape* shape);
+    Land(const Land& other) = delete;
+    Land(Land&& other);
+    Land& operator=(const Land& other) = delete;
+    Land& operator=(Land&& other) = delete;
 
     void setAddres(const std::string& addres);
     void setShape(IShape* shape);
 
     const std::string& getAddres() const;
+    const IShape* getShape();
     double getArea() const;
     const Fraction* getFraction(unsigned int passport) const;
     long double getHolderArea(unsigned int passport) const;
