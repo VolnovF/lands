@@ -21,7 +21,7 @@ public:
     double getArea() const;
     double getPercent() const;
 
-    double calculeteArea(double area);
+    double calculateArea(double area);
     double value() const;
     double long_value() const;
 

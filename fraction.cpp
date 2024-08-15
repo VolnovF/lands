@@ -33,7 +33,7 @@ double Fraction::getPercent() const
     return _percent;
 }
 
-double Fraction::calculeteArea(double area)
+double Fraction::calculateArea(double area)
 {
     _area = *this * area;
     return _area;

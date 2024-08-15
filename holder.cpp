@@ -52,7 +52,7 @@ bool Land::addHolder(unsigned int passport, Fraction part)
 {
     if(part <= 0.0) { return false;}
     if(sumParts() + part.value() > 1) { return false; }
-    part.calculeteArea(getArea());
+    part.calculateArea(getArea());
     _holders.insert(std::make_pair(passport, part));
     return true;
 }

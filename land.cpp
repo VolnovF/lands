@@ -23,7 +23,7 @@ void Land::setShape(IShape* shape)
     _shape = shape;
     for (HolderAndPart pair : _holders)
     {
-        pair.second.calculeteArea(_shape->getArea());
+        pair.second.calculateArea(_shape->getArea());
     }
 }
 
@@ -45,10 +45,7 @@ double Land::getArea() const
 const Fraction* Land::getPart(unsigned int passport) const
 {
     HolderConstIterator holder {_holders.find(passport)};
-    if (holder == _holders.end())
-    {
-        return nullptr;
-    }
+    if (holder == _holders.end()) { return nullptr; }
     return &(holder->second);
 }
 
