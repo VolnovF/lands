@@ -1,15 +1,24 @@
 #include "land.h"
 
+unsigned int Land::nextUniqueID()
+{
+    return counter++;
+}
+
 Land::Land(const std::string& addres, IShape* shape)
     : _shape{shape}, _addres{addres}, _area{getRoundArea()}
-{}
+{
+    _id = nextUniqueID();
+}
 
 Land::Land(Land&& other)
 {
-    _addres = std::move(other._addres);
+    _id = other._id;
+    other._id = 0;
     _shape = other._shape;
-    _area = other._area;
     other._shape = nullptr;
+    _addres = std::move(other._addres);
+    _area = other._area;
     _holders = std::move(other._holders);
 }
 

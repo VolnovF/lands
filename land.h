@@ -19,10 +19,14 @@ class Holder;
 class Land
 {
 private:
+    unsigned int _id;
     IShape* _shape;
     std::string _addres;
     double _area;
     std::map<unsigned int,Part*> _holders;
+    static inline unsigned int counter{1};
+
+    unsigned int nextUniqueID();
 
 public:
     Land(const std::string& addres, IShape* shape);

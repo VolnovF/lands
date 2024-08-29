@@ -15,6 +15,7 @@ Holder::Holder(Holder &&other)
 {
     _fio = std::move(other._fio);
     _passport = other._passport;
+    other._passport = 0;
     _lands = std::move(other._lands);
 }
 
@@ -61,3 +62,4 @@ bool Land::addHolder(unsigned int passport, Part* part)
     _holders.insert(std::make_pair(passport, part));
     return true;
 }
+

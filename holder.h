@@ -9,8 +9,8 @@
 class Holder
 {
 private:
-    std::string _fio;
     unsigned int _passport;
+    std::string _fio;
     std::vector<Land*> _lands;
     static inline unsigned int counter{1};
 
