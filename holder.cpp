@@ -33,6 +33,11 @@ long double Holder::getArea()
     return sum;
 }
 
+unsigned int Holder::getPassport() const
+{
+    return _passport;
+}
+
 void Holder::setFio(std::string fio)
 {
     _fio = fio;

@@ -27,6 +27,7 @@ public:
 
     std::string getFio() const;
     long double getArea();
+    unsigned int getPassport() const;
 
     bool addLand(Land* land, Part* part);
 
