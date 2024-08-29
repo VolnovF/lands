@@ -1,17 +1,18 @@
-#ifndef LAND_H
+﻿#ifndef LAND_H
 #define LAND_H
 
 #include <iostream>
+#include <cmath>
 #include <utility>
 #include <string>
 #include <map>
 
 #include "shape.h"
-#include "fraction.h"
+#include "part.h"
 
-using HolderIterator = std::map<unsigned int,Fraction>::iterator;
-using HolderConstIterator = std::map<unsigned int,Fraction>::const_iterator;
-using HolderAndPart = std::pair<unsigned int,Fraction>;
+using HolderIterator = std::map<unsigned int,Part*>::iterator;
+using HolderConstIterator = std::map<unsigned int,Part*>::const_iterator;
+using HolderAndPart = std::pair<unsigned int,Part*>;
 
 class Holder;
 
@@ -20,7 +21,8 @@ class Land
 private:
     IShape* _shape;
     std::string _addres;
-    std::map<unsigned int,Fraction> _holders;
+    double _area;
+    std::map<unsigned int,Part*> _holders;
 
 public:
     Land(const std::string& addres, IShape* shape);
@@ -31,19 +33,21 @@ public:
 
     void setAddres(const std::string& addres);
     void setShape(IShape* shape);
+    void calculateArea();
 
     const std::string& getAddres() const;
-    const IShape* getShape();
+    const IShape* getShape() const;
     double getArea() const;
-    const Fraction* getPart(unsigned int passport) const;
+    double getRoundArea() const;
+    const Part* getPart(unsigned int passport) const;
     double getHolderArea(unsigned int passport) const;
-    const std::map<unsigned int,Fraction>& getHolders() const;
+    const std::map<unsigned int,Part*>& getHolders() const;
 
     double sumParts() const;
 
     ~Land();
 
-    bool addHolder(unsigned int passport, Fraction part); //определение в holder.cpp
+    bool addHolder(unsigned int passport, Part* part); //определение в holder.cpp
 };
 
 #endif // LAND_H

@@ -6,11 +6,7 @@ Fraction::Fraction()
 Fraction::Fraction(int numerator, int denominator)
     : _numerator{numerator}, _denominator{denominator}
 {
-    if (!_denominator)
-    {
-        exit(EXIT_FAILURE);
-    }
-    _percent = std::round(value() * 10000) / 100;
+    if (!_denominator) { exit(EXIT_FAILURE); }
 }
 
 int Fraction::getNumerator() const
@@ -23,20 +19,9 @@ int Fraction::getDenominator() const
     return _denominator;
 }
 
-double Fraction::getArea() const
+void Fraction::calculateArea(double LandArea)
 {
-    return _area;
-}
-
-double Fraction::getPercent() const
-{
-    return _percent;
-}
-
-double Fraction::calculateArea(double area)
-{
-    _area = *this * area;
-    return _area;
+    _area = *this * LandArea;
 }
 
 double Fraction::value() const

@@ -28,7 +28,7 @@ public:
     std::string getFio() const;
     long double getArea();
 
-    bool addLand(Land* land, Fraction part);
+    bool addLand(Land* land, Part* part);
 
     ~Holder() = default;
 };

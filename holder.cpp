@@ -38,7 +38,7 @@ void Holder::setFio(std::string fio)
     _fio = fio;
 }
 
-bool Holder::addLand(Land* land, Fraction part)
+bool Holder::addLand(Land* land, Part* part)
 {
     bool result{ land->addHolder(_passport, part) };
     if (result)
@@ -48,11 +48,11 @@ bool Holder::addLand(Land* land, Fraction part)
     return result;
 }
 
-bool Land::addHolder(unsigned int passport, Fraction part)
+bool Land::addHolder(unsigned int passport, Part* part)
 {
-    if(part <= 0.0) { return false;}
-    if(sumParts() + part.value() > 1) { return false; }
-    part.calculateArea(getArea());
+    if(!part) { return false;}
+    if(sumParts() > _area) { return false; }
+    part->calculateArea(_area);
     _holders.insert(std::make_pair(passport, part));
     return true;
 }

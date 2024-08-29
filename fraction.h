@@ -5,23 +5,23 @@
 #include <cmath>
 #include <cstdlib>
 
-class Fraction
+#include "part.h"
+
+class Fraction : public Part
 {
 private:
     int _numerator;
     int _denominator;
-    double _area;
-    double _percent;
+
 public:
     Fraction();
     Fraction(int numerator, int denominator = 1);
 
     int getNumerator() const;
     int getDenominator() const;
-    double getArea() const;
-    double getPercent() const;
 
-    double calculateArea(double area);
+    void calculateArea(double LandArea) override;
+
     double value() const;
     double long_value() const;
 
