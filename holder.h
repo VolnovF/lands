@@ -6,6 +6,8 @@
 
 #include "land.h"
 
+using LandIterator = std::vector<Land*>::iterator;
+
 class Holder
 {
 private:
@@ -30,6 +32,7 @@ public:
     unsigned int getPassport() const;
 
     bool addLand(Land* land, Part* part);
+    void deleteLand(unsigned int id);
 
     ~Holder() = default;
 };

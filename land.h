@@ -39,6 +39,7 @@ public:
     void setShape(IShape* shape);
     void calculateArea();
 
+    unsigned int getId() const;
     const std::string& getAddres() const;
     const IShape* getShape() const;
     double getArea() const;
@@ -52,6 +53,7 @@ public:
     ~Land();
 
     bool addHolder(unsigned int passport, Part* part); //определение в holder.cpp
+    void deleteHolder(unsigned int passport); //определение в holder.cpp
 };
 
 #endif // LAND_H

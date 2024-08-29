@@ -54,12 +54,34 @@ bool Holder::addLand(Land* land, Part* part)
     return result;
 }
 
+void Holder::deleteLand(unsigned int id)
+{
+    for (LandIterator land {_lands.begin()}; land < _lands.end(); land++)
+    {
+        if ((*land)->getId() == id)
+        {
+            (*land)->deleteHolder(_passport);
+            _lands.erase(land);
+        }
+    };
+}
+
 bool Land::addHolder(unsigned int passport, Part* part)
 {
+    auto d = _holders.begin();
     if(!part) { return false;}
     if(sumParts() > _area) { return false; }
     part->calculateArea(_area);
     _holders.insert(std::make_pair(passport, part));
     return true;
 }
+
+void Land::deleteHolder(unsigned int passport)
+{
+    HolderIterator holder {_holders.find(passport)};
+    if (holder == _holders.end()) { return; }
+    delete holder->second;
+    _holders.erase(holder);
+}
+
 

@@ -43,6 +43,11 @@ void Land::calculateArea()
     _area = std::round(_shape->getArea() * 100) / 100;
 }
 
+unsigned int Land::getId() const
+{
+    return _id;
+}
+
 const std::string& Land::getAddres() const
 {
     return _addres;
