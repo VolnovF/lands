@@ -6,7 +6,10 @@ Fraction::Fraction()
 Fraction::Fraction(int numerator, int denominator)
     : _numerator{numerator}, _denominator{denominator}
 {
-    if (!_denominator) { exit(EXIT_FAILURE); }
+    if (!_denominator)
+    {
+        exit(EXIT_FAILURE);
+    }
 }
 
 int Fraction::getNumerator() const
@@ -19,9 +22,23 @@ int Fraction::getDenominator() const
     return _denominator;
 }
 
-void Fraction::calculateArea(double LandArea)
+double Fraction::getArea() const
 {
-    _area = *this * LandArea;
+    return _area;
+}
+
+double Fraction::getRemains() const
+{
+    return _remains;
+}
+
+double Fraction::calculateArea(double area)
+{
+    _area = *this * area;
+    double roundArea{ std::floor(_area * 100) / 100 };
+    _remains = _area - roundArea;
+    _area = roundArea;
+    return _area;
 }
 
 double Fraction::value() const
@@ -37,10 +54,10 @@ double Fraction::long_value() const
 Fraction Fraction::operator+(const Fraction& other) const
 {
     return Fraction
-    {
-        _numerator * other._denominator + other._numerator * _denominator,
-        _denominator * other._denominator
-    };
+        {
+            _numerator * other._denominator + other._numerator * _denominator,
+            _denominator * other._denominator
+        };
 }
 
 double Fraction::operator+(double decimal) const
@@ -51,10 +68,10 @@ double Fraction::operator+(double decimal) const
 Fraction Fraction::operator-(const Fraction& other) const
 {
     return Fraction
-    {
-        _numerator * other._denominator - other._numerator * _denominator,
-        _denominator * other._denominator
-    };
+        {
+            _numerator * other._denominator - other._numerator * _denominator,
+            _denominator * other._denominator
+        };
 }
 
 double Fraction::operator-(double decimal) const
@@ -65,13 +82,13 @@ double Fraction::operator-(double decimal) const
 Fraction Fraction::operator*(const Fraction& other) const
 {
     return Fraction
-    {
-        _numerator * other._numerator,
-        _denominator * other._denominator
-    };
+        {
+            _numerator * other._numerator,
+            _denominator * other._denominator
+        };
 }
 
- double Fraction::operator*(double decimal) const
+double Fraction::operator*(double decimal) const
 {
     return decimal * _numerator / _denominator;
 }
@@ -79,10 +96,10 @@ Fraction Fraction::operator*(const Fraction& other) const
 Fraction Fraction::operator/(const Fraction& other) const
 {
     return Fraction
-    {
-        _numerator * other._denominator,
-        _denominator * other._numerator
-    };
+        {
+            _numerator * other._denominator,
+            _denominator * other._numerator
+        };
 }
 
 double Fraction::operator/(double decimal) const
@@ -99,7 +116,6 @@ bool Fraction::operator==(double decimal) const
 {
     return value() == decimal;
 }
-
 
 bool Fraction::operator>(const Fraction &other) const
 {

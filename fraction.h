@@ -1,27 +1,25 @@
 #ifndef FRACTION_H
 #define FRACTION_H
-
 #include <iostream>
 #include <cmath>
 #include <cstdlib>
 
-#include "part.h"
-
-class Fraction : public Part
+class Fraction
 {
 private:
     int _numerator;
     int _denominator;
-
+    double _area;
+    double _remains;
 public:
     Fraction();
     Fraction(int numerator, int denominator = 1);
-
     int getNumerator() const;
     int getDenominator() const;
+    double getArea() const;
+    double getRemains() const;
 
-    void calculateArea(double LandArea) override;
-
+    double calculateArea(double area);
     double value() const;
     double long_value() const;
 
@@ -45,8 +43,6 @@ public:
     bool operator<=(double decimal) const;
     operator double() const;
     operator long double() const;
-
     friend std::ostream& operator<< (std::ostream &out, const Fraction &fraction);
 };
-
 #endif // FRACTION_H

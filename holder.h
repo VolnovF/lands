@@ -4,19 +4,19 @@
 #include <string>
 #include <vector>
 
-#include "land.h"
+class Land;
 
 using LandIterator = std::vector<Land*>::iterator;
 
 class Holder
 {
 private:
-    unsigned int _passport;
+    friend class Land;
+
     std::string _fio;
     std::vector<Land*> _lands;
-    static inline unsigned int counter{1};
 
-    unsigned int nextUniqueID();
+    void addLand(Land* land);
 
 public:
     Holder(std::string fio);
@@ -28,11 +28,7 @@ public:
     void setFio(std::string fio);
 
     std::string getFio() const;
-    long double getArea();
-    unsigned int getPassport() const;
-
-    bool addLand(Land* land, Part* part);
-    void deleteLand(unsigned int id);
+    double getArea(); //определение в land.cpp
 
     ~Holder() = default;
 };

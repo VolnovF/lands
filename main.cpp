@@ -8,9 +8,6 @@
 #include "land.h"
 #include "holder.h"
 
-#include "fraction.h"
-#include "fixedpart.h"
-
 int main()
 {
     Land triangle {"ул.Ленина 181", new Triangle(5, 4, 3)};
@@ -22,24 +19,30 @@ int main()
     Holder konstantin{"Константин Сергеевич"};
     Holder anton{"Антон"};
 
-    ivan.addLand(&rectangle, new Fraction(1,3));
-    konstantin.addLand(&rectangle, new Fraction(1,3));
-    anton.addLand(&rectangle, new Fraction(1,3));
+    rectangle.add(&ivan, new Fraction(1,3));
+    rectangle.add(&konstantin, new Fraction(1,3));
+    rectangle.add(&anton, new Fraction(1,3));
+    std::cout << rectangle.commit() << ' ';
 
-    ivan.addLand(&triangle, new Fraction(2,3));
-    konstantin.addLand(&triangle, new Fraction(1,3));
+    triangle.add(&ivan, new Fraction(97,99));
+    triangle.add(&konstantin, new Fraction(2,99));
+    std::cout << triangle.commit() << ' ';
 
-    anton.addLand(&circle, new Fraction(1));
+    circle.add(&anton, new Fraction(1));
+    std::cout << circle.commit() << ' ';
 
-    ivan.addLand(&square, new FixedPart(5));
-    konstantin.addLand(&square, new FixedPart(4));
+    square.add(&ivan, new Fraction(5,12));
+    square.add(&konstantin, new Fraction(7,12));
+    std::cout << square.commit() << '\n';
 
     std::cout << triangle.getAddres() << " площадью " << triangle.getArea() << " га. земли\n" ;
     std::cout << circle.getAddres() << " площадью " << circle.getArea() << " га. земли\n";
     std::cout << rectangle.getAddres() << " площадью " << rectangle.getArea() << " га. земли\n" ;
     std::cout << square.getAddres() << " площадью " << square.getArea() << " га. земли\n" ;
+    std::cout << "Всего: " << triangle.getArea() + circle.getArea() + rectangle.getArea() + square.getArea() << " га. земли\n" ;
     std::cout << "\n" ;
     std::cout << ivan.getFio() << " владеет " << ivan.getArea() << " га. земли\n" ;
     std::cout << konstantin.getFio() << " владеет " << konstantin.getArea() << " га. земли\n" ;
     std::cout << anton.getFio() << " владеет " << anton.getArea() << " га. земли\n";
+    std::cout << "Всего: " << ivan.getArea() + konstantin.getArea() + anton.getArea() << " га. земли\n" ;
 }
