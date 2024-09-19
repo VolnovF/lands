@@ -1,18 +1,23 @@
-#include "land.h"
+﻿#include "land.h"
 
-void Land::addHolder(Holder* holder, Fraction* fraction)
+void Land::addHolder(Holder* holder, Part part)
 {
-    _holders.insert(std::make_pair(holder, fraction));
+    _holders.insert(std::make_pair(holder, part));
+}
+
+void Land::addHolder(HolderAndPart pair)
+{
+    _holders.insert(pair);
 }
 
 Land::Land(const std::string& addres, IShape* shape)
-    : _shape{shape}, _addres{addres}, _area{(std::floor(shape->getArea()) * 100) / 100}
+    : _currentShape{shape}, _newShape(shape), _addres{addres}, _area{(std::floor(shape->getArea()) * 100) / 100}
 {}
 
 Land::Land(Land&& other)
 {
-    _shape = other._shape;
-    other._shape = nullptr;
+    _currentShape = other._currentShape;
+    other._currentShape = nullptr;
     _addres = std::move(other._addres);
     _area = other._area;
     other._area = 0;
@@ -20,48 +25,52 @@ Land::Land(Land&& other)
     _addQueue = std::move(other._addQueue);
 }
 
-void Land::add(Holder *holder, Fraction *fraction)
+void Land::changeShape(IShape* shape)
 {
-    _addQueue.push_front(std::make_pair(holder, fraction));
+    if (!shape) {return;}
+    _newShape = shape;
+    clear();
+}
+
+void Land::add(Holder *holder, Fraction fraction)
+{
+    _addQueue.push_front(std::make_pair(holder, Part(fraction, _newShape->getRoundArea())));
+}
+
+void Land::add(Holder *holder, double area)
+{
+    _addQueue.push_front(std::make_pair(holder, Part(area)));;
 }
 
 bool Land::commit()
 {
     double sumArea{0};
     double sumRemains{0};
-    for (HolderAndFraction pair : _addQueue)
+    for (HolderAndPart pair : _addQueue)
     {
-        pair.second->calculateArea(_area);
-        sumArea += pair.second->getArea();
-        sumRemains += pair.second->getRemains();
+        sumArea += pair.second.getArea();
+        sumRemains += pair.second.getRemains();
     }
-    double difference{std::abs(_area - sumArea - sumRemains)};
+    double difference{std::abs(_newShape->getRoundArea() - sumArea - sumRemains)};
     if (difference > 0.0000001)
     {
         clear();
         return false;
     }
-    for (HolderAndFraction pair : _addQueue)
+    _currentShape = _newShape;
+    calculateArea();
+    for (HolderAndPart pair : _addQueue)
     {
-        addHolder(pair.first, pair.second);
+        addHolder(pair);
         pair.first->addLand(this);
     }
-    free();
+    clear();
     return true;
-}
-
-void Land::free()
-{
-    _addQueue.erase(_addQueue.begin(), _addQueue.end());
 }
 
 void Land::clear()
 {
-    for (HolderAndFraction pair : _addQueue)
-    {
-        delete pair.second;
-    }
-    free();
+    _addQueue.erase(_addQueue.begin(), _addQueue.end());
 }
 
 void Land::setAddres(const std::string& addres)
@@ -69,25 +78,15 @@ void Land::setAddres(const std::string& addres)
     _addres = addres;
 }
 
-void Land::setShape(IShape* shape)
-{
-    delete _shape;
-    _shape = shape;
-    calculateArea();
-    for (HolderAndFraction pair : _holders)
-    {
-        pair.second->calculateArea(_area);
-    }
-}
 
 void Land::calculateArea()
 {
-    _area = (std::floor(_shape->getArea()) * 100) / 100;
+    _area = (std::floor(_currentShape->getArea()) * 100) / 100;
 }
 
 const IShape *Land::getShape() const
 {
-    return _shape;
+    return _currentShape;
 }
 
 const std::string& Land::getAddres() const
@@ -100,37 +99,29 @@ double Land::getArea() const
     return _area;
 }
 
-double Land::getRoundArea() const
-{
-    return (std::floor(_shape->getArea()) * 100) / 100;
-}
-
-const Fraction *Land::getFraction(Holder* holder) const
+const Part *Land::getPart(Holder* holder) const
 {
     HolderConstIterator holderIter {_holders.find(holder)};
     if (holderIter == _holders.end()) { return nullptr; }
-    return holderIter->second;
+    return &(holderIter->second);
 }
 
 double Land::getHolderArea(Holder* holder) const
 {
-    const Fraction* part {getFraction(holder)};
+    const Part* part {getPart(holder)};
     if (!part) { return 0; }
     return part->getArea() + part->getRemains();
 }
 
-const std::map<Holder*, Fraction*>& Land::getHolders() const
+const std::map<Holder*, Part>& Land::getHolders() const
 {
     return _holders;
 }
 
 Land::~Land()
 {
-    delete _shape;
-    for (HolderAndFraction pair : _holders)
-    {
-        delete pair.second;
-    };
+    if (_currentShape != _newShape) {delete _newShape;}
+    delete _currentShape;
     clear();
 }
 

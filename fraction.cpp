@@ -22,25 +22,6 @@ int Fraction::getDenominator() const
     return _denominator;
 }
 
-double Fraction::getArea() const
-{
-    return _area;
-}
-
-double Fraction::getRemains() const
-{
-    return _remains;
-}
-
-double Fraction::calculateArea(double area)
-{
-    _area = *this * area;
-    double roundArea{ std::floor(_area * 100) / 100 };
-    _remains = _area - roundArea;
-    _area = roundArea;
-    return _area;
-}
-
 double Fraction::value() const
 {
     return (double)_numerator / _denominator;

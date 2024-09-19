@@ -13,26 +13,26 @@ int main()
     Land triangle {"ул.Ленина 181", new Triangle(5, 4, 3)};
     Land circle {"ул.Ленина 182", new Circle(2)};
     Land rectangle {"ул.Ленина 183", new Rectangle(1, 2)};
-    Land square {"ул.Ленина 184", new Square(3)};
+    Land square {"ул.Ленина 184", new Square(1)};
 
     Holder ivan{"Иванов Иван Иванович"};
     Holder konstantin{"Константин Сергеевич"};
     Holder anton{"Антон"};
 
-    rectangle.add(&ivan, new Fraction(1,3));
-    rectangle.add(&konstantin, new Fraction(1,3));
-    rectangle.add(&anton, new Fraction(1,3));
+    rectangle.add(&ivan, Fraction(1,3));
+    rectangle.add(&konstantin, Fraction(1,3));
+    rectangle.add(&anton, Fraction(1,3));
     std::cout << rectangle.commit() << ' ';
 
-    triangle.add(&ivan, new Fraction(97,99));
-    triangle.add(&konstantin, new Fraction(2,99));
+    triangle.add(&ivan, Fraction(97,99));
+    triangle.add(&konstantin, Fraction(2,99));
     std::cout << triangle.commit() << ' ';
 
-    circle.add(&anton, new Fraction(1));
+    circle.add(&anton, Fraction(1));
     std::cout << circle.commit() << ' ';
 
-    square.add(&ivan, new Fraction(5,12));
-    square.add(&konstantin, new Fraction(7,12));
+    square.add(&ivan, Fraction(5,12));
+    square.add(&konstantin, Fraction(7,12));
     std::cout << square.commit() << '\n';
 
     std::cout << triangle.getAddres() << " площадью " << triangle.getArea() << " га. земли\n" ;

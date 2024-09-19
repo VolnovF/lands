@@ -7,26 +7,28 @@
 #include <list>
 
 #include "shape.h"
-#include "fraction.h"
+#include "part.h"
 #include "holder.h"
 
-using HolderIterator = std::map<Holder*,Fraction*>::iterator;
-using HolderConstIterator = std::map<Holder*,Fraction*>::const_iterator;
-using HolderAndFraction = std::pair<Holder*,Fraction*>;
-using QueueIterator = std::list<HolderAndFraction>::iterator;
-using QueueConstIterator = std::list<HolderAndFraction>::const_iterator;
+using HolderIterator = std::map<Holder*,Part>::iterator;
+using HolderConstIterator = std::map<Holder*,Part>::const_iterator;
+using HolderAndPart = std::pair<Holder*,Part>;
+using QueueIterator = std::list<HolderAndPart>::iterator;
+using QueueConstIterator = std::list<HolderAndPart>::const_iterator;
 
 
 class Land
 {
 private:
-    IShape* _shape;
+    IShape* _currentShape;
+    IShape* _newShape {nullptr};
     std::string _addres;
     double _area;
-    std::map<Holder*,Fraction*> _holders;
-    std::list<HolderAndFraction> _addQueue;
+    std::map<Holder*,Part> _holders;
+    std::list<HolderAndPart> _addQueue;
 
-    void addHolder(Holder* holder, Fraction* fraction);
+    void addHolder(Holder* holder, Part part);
+    void addHolder(HolderAndPart pair);
 
 public:
     Land(const std::string& addres, IShape* shape);
@@ -35,22 +37,22 @@ public:
     Land& operator=(const Land& other) = delete;
     Land& operator=(Land&& other) = delete;
 
-    void add(Holder* holder, Fraction* fraction);
+    void changeShape(IShape* shape);
+    void add(Holder* holder, Fraction fraction);
+    void add(Holder* holder, double area);
     bool commit();
-    void free();
     void clear();
 
     void setAddres(const std::string& addres);
-    void setShape(IShape* shape);
     void calculateArea();
 
     const IShape* getShape() const;
     const std::string& getAddres() const;
     double getArea() const;
-    double getRoundArea() const;
-    const Fraction* getFraction(Holder* holder) const;
+    //double getRoundArea() const;
+    const Part* getPart(Holder* holder) const;
     double getHolderArea(Holder* holder) const;
-    const std::map<Holder*,Fraction*>& getHolders() const;
+    const std::map<Holder*,Part>& getHolders() const;
 
     ~Land();
 

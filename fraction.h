@@ -9,17 +9,12 @@ class Fraction
 private:
     int _numerator;
     int _denominator;
-    double _area;
-    double _remains;
 public:
     Fraction();
     Fraction(int numerator, int denominator = 1);
     int getNumerator() const;
     int getDenominator() const;
-    double getArea() const;
-    double getRemains() const;
 
-    double calculateArea(double area);
     double value() const;
     double long_value() const;
 
