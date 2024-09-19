@@ -11,6 +11,7 @@ SOURCES += \
         holder.cpp \
         land.cpp \
         main.cpp \
+        part.cpp \
         shape.cpp \
         shapes/circle.cpp \
         shapes/rectangle.cpp \
@@ -26,6 +27,7 @@ HEADERS += \
     fraction.h \
     holder.h \
     land.h \
+    part.h \
     shape.h \
     shapes/circle.h \
     shapes/rectangle.h \
