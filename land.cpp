@@ -11,7 +11,7 @@ void Land::addHolder(HolderAndPart pair)
 }
 
 Land::Land(const std::string& addres, IShape* shape)
-    : _currentShape{shape}, _newShape(shape), _addres{addres}, _area{(std::floor(shape->getArea()) * 100) / 100}
+    : _currentShape{shape}, _newShape(shape), _addres{addres}, _area{shape->getRoundArea()}
 {}
 
 Land::Land(Land&& other)
@@ -81,7 +81,7 @@ void Land::setAddres(const std::string& addres)
 
 void Land::calculateArea()
 {
-    _area = (std::floor(_currentShape->getArea()) * 100) / 100;
+    _area = _currentShape->getRoundArea();
 }
 
 const IShape *Land::getShape() const
