@@ -24,6 +24,12 @@ int main()
     rectangle.add(&anton, Fraction(1,3));
     std::cout << rectangle.commit() << ' ';
 
+    rectangle.changeShape(new Rectangle(3,2));
+    rectangle.add(&ivan, Fraction(1,3));
+    rectangle.add(&konstantin, Fraction(1,3));
+    rectangle.add(&anton, Fraction(1,3));
+    std::cout << rectangle.commit() << ' ';
+
     triangle.add(&ivan, Fraction(97,99));
     triangle.add(&konstantin, Fraction(2,99));
     std::cout << triangle.commit() << ' ';

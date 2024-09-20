@@ -10,6 +10,15 @@ void Land::addHolder(HolderAndPart pair)
     _holders.insert(pair);
 }
 
+void Land::deleteAllHolders()
+{
+    for (HolderAndPart pair : _holders)
+    {
+        pair.first->deleteLand(this);
+    }
+    _holders.erase(_holders.begin(), _holders.end());
+}
+
 Land::Land(const std::string& addres, IShape* shape)
     : _currentShape{shape}, _newShape(shape), _addres{addres}, _area{shape->getRoundArea()}
 {}
@@ -46,6 +55,15 @@ bool Land::commit()
 {
     double sumArea{0};
     double sumRemains{0};
+    bool shapeChanged {_currentShape != _newShape};
+    if (!shapeChanged)
+    {
+        for (HolderAndPart pair : _holders)
+        {
+            sumArea += pair.second.getArea();
+            sumRemains += pair.second.getRemains();
+        }
+    }
     for (HolderAndPart pair : _addQueue)
     {
         sumArea += pair.second.getArea();
@@ -57,8 +75,12 @@ bool Land::commit()
         clear();
         return false;
     }
-    _currentShape = _newShape;
-    calculateArea();
+    if (shapeChanged)
+    {
+        _currentShape = _newShape;
+        calculateArea();
+        deleteAllHolders();
+    }
     for (HolderAndPart pair : _addQueue)
     {
         addHolder(pair);

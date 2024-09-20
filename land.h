@@ -29,6 +29,7 @@ private:
 
     void addHolder(Holder* holder, Part part);
     void addHolder(HolderAndPart pair);
+    void deleteAllHolders();
 
 public:
     Land(const std::string& addres, IShape* shape);

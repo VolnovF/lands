@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <algorithm>
 
 class Land;
 
@@ -17,6 +18,7 @@ private:
     std::vector<Land*> _lands;
 
     void addLand(Land* land);
+    void deleteLand(Land* land);
 
 public:
     Holder(std::string fio);

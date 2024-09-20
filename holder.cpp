@@ -25,4 +25,11 @@ void Holder::addLand(Land* land)
     _lands.push_back(land);
 }
 
+void Holder::deleteLand(Land *land)
+{
+    auto find {std::find(_lands.begin(), _lands.end(), land)};
+    if (find == _lands.end()) {return;}
+    _lands.erase(find);
+}
+
 
