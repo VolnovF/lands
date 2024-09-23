@@ -7,12 +7,12 @@
 #include <list>
 
 #include "shape.h"
-#include "part.h"
+#include "fraction.h"
 #include "holder.h"
 
-using HolderIterator = std::map<Holder*,Part>::iterator;
-using HolderConstIterator = std::map<Holder*,Part>::const_iterator;
-using HolderAndPart = std::pair<Holder*,Part>;
+using HolderIterator = std::map<Holder*,double>::iterator;
+using HolderConstIterator = std::map<Holder*,double>::const_iterator;
+using HolderAndPart = std::pair<Holder*,double>;
 using QueueIterator = std::list<HolderAndPart>::iterator;
 using QueueConstIterator = std::list<HolderAndPart>::const_iterator;
 
@@ -24,10 +24,10 @@ private:
     IShape* _newShape {nullptr};
     std::string _addres;
     double _area;
-    std::map<Holder*,Part> _holders;
+    std::map<Holder*,double> _holders;
     std::list<HolderAndPart> _addQueue;
 
-    void addHolder(Holder* holder, Part part);
+    void addHolder(Holder* holder, double part);
     void addHolder(HolderAndPart pair);
     void deleteAllHolders();
 
@@ -51,9 +51,9 @@ public:
     const std::string& getAddres() const;
     double getArea() const;
     //double getRoundArea() const;
-    const Part* getPart(Holder* holder) const;
+    const double* getPart(Holder* holder) const;
     double getHolderArea(Holder* holder) const;
-    const std::map<Holder*,Part>& getHolders() const;
+    const std::map<Holder*,double>& getHolders() const;
 
     ~Land();
 

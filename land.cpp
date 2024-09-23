@@ -1,6 +1,6 @@
 ﻿#include "land.h"
 
-void Land::addHolder(Holder* holder, Part part)
+void Land::addHolder(Holder* holder, double part)
 {
     _holders.insert(std::make_pair(holder, part));
 }
@@ -43,33 +43,23 @@ void Land::changeShape(IShape* shape)
 
 void Land::add(Holder *holder, Fraction fraction)
 {
-    _addQueue.push_front(std::make_pair(holder, Part(fraction, _newShape->getRoundArea())));
+    _addQueue.push_front(std::make_pair(holder, _newShape->getRoundArea()*fraction.value()));
 }
 
 void Land::add(Holder *holder, double area)
 {
-    _addQueue.push_front(std::make_pair(holder, Part(area)));;
+    _addQueue.push_front(std::make_pair(holder, area));;
 }
 
 bool Land::commit()
 {
     double sumArea{0};
-    double sumRemains{0};
     bool shapeChanged {_currentShape != _newShape};
-    if (!shapeChanged)
-    {
-        for (HolderAndPart pair : _holders)
-        {
-            sumArea += pair.second.getArea();
-            sumRemains += pair.second.getRemains();
-        }
-    }
     for (HolderAndPart pair : _addQueue)
     {
-        sumArea += pair.second.getArea();
-        sumRemains += pair.second.getRemains();
+        sumArea += pair.second;
     }
-    double difference{std::abs(_newShape->getRoundArea() - sumArea - sumRemains)};
+    double difference{std::abs(_newShape->getRoundArea() - sumArea)};
     if (difference > 0.0000001)
     {
         clear();
@@ -121,7 +111,7 @@ double Land::getArea() const
     return _area;
 }
 
-const Part *Land::getPart(Holder* holder) const
+const double *Land::getPart(Holder* holder) const
 {
     HolderConstIterator holderIter {_holders.find(holder)};
     if (holderIter == _holders.end()) { return nullptr; }
@@ -130,12 +120,12 @@ const Part *Land::getPart(Holder* holder) const
 
 double Land::getHolderArea(Holder* holder) const
 {
-    const Part* part {getPart(holder)};
+    const double* part {getPart(holder)};
     if (!part) { return 0; }
-    return part->getArea() + part->getRemains();
+    return *part;
 }
 
-const std::map<Holder*, Part>& Land::getHolders() const
+const std::map<Holder*, double>& Land::getHolders() const
 {
     return _holders;
 }
