@@ -17,6 +17,8 @@ private:
     std::string _fio;
     std::vector<Land*> _lands;
 
+    static Holder* _chamber;
+
     void addLand(Land* land);
     void deleteLand(Land* land);
 
@@ -26,6 +28,8 @@ public:
     Holder(Holder&& other);
     Holder& operator=(const Holder& other) = delete;
     Holder& operator=(Holder&& other) = delete;
+
+    static Holder* getChamber();
 
     void setFio(std::string fio);
 
