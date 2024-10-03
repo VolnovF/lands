@@ -1,5 +1,28 @@
 ﻿#include "land.h"
 
+Land::Land(const std::string& addres, IShape* shape)
+    : _currentShape{shape},
+    _newShape(shape),
+    _addres{addres},
+    _area{shape->getRoundArea()}
+{}
+
+Land::Land(Land&& other)
+{
+    _currentShape = other._currentShape;
+    other._currentShape = nullptr;
+    _addres = std::move(other._addres);
+    _area = other._area;
+    other._area = 0;
+    _holders = std::move(other._holders);
+    _addQueue = std::move(other._addQueue);
+}
+
+double Land::calculatePartArea(Fraction fraction)
+{
+    return _newShape->getRoundArea() * fraction.value();
+}
+
 void Land::addHolder(Holder* holder, double part)
 {
     _holders.insert(std::make_pair(holder, part));
@@ -19,31 +42,16 @@ void Land::deleteAllHolders()
     _holders.erase(_holders.begin(), _holders.end());
 }
 
-Land::Land(const std::string& addres, IShape* shape)
-    : _currentShape{shape}, _newShape(shape), _addres{addres}, _area{shape->getRoundArea()}
-{}
-
-Land::Land(Land&& other)
-{
-    _currentShape = other._currentShape;
-    other._currentShape = nullptr;
-    _addres = std::move(other._addres);
-    _area = other._area;
-    other._area = 0;
-    _holders = std::move(other._holders);
-    _addQueue = std::move(other._addQueue);
-}
-
 void Land::changeShape(IShape* shape)
 {
     if (!shape) {return;}
     _newShape = shape;
-    clear();
+    clearQueue();
 }
 
 void Land::add(Holder *holder, Fraction fraction)
 {
-    _addQueue.push_front(std::make_pair(holder, _newShape->getRoundArea()*fraction.value()));
+    _addQueue.push_front(std::make_pair(holder, calculatePartArea(fraction)));
 }
 
 void Land::add(Holder *holder, double area)
@@ -62,7 +70,7 @@ bool Land::commit()
     double difference{std::abs(_newShape->getRoundArea() - sumArea)};
     if (difference > 0.0000001)
     {
-        clear();
+        clearQueue();
         return false;
     }
     if (shapeChanged)
@@ -76,11 +84,11 @@ bool Land::commit()
         addHolder(pair);
         pair.first->addLand(this);
     }
-    clear();
+    clearQueue();
     return true;
 }
 
-void Land::clear()
+void Land::clearQueue()
 {
     _addQueue.erase(_addQueue.begin(), _addQueue.end());
 }
@@ -134,7 +142,7 @@ Land::~Land()
 {
     if (_currentShape != _newShape) {delete _newShape;}
     delete _currentShape;
-    clear();
+    clearQueue();
 }
 
 double Holder::getArea()

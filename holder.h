@@ -1,4 +1,4 @@
- #ifndef HOLDER_H
+#ifndef HOLDER_H
 #define HOLDER_H
 
 #include <string>
@@ -31,7 +31,7 @@ public:
 
     static Holder* getChamber();
 
-    void setFio(std::string fio);
+    void setFio(const std::string& fio);
 
     std::string getFio() const;
     double getArea(); //определение в land.cpp

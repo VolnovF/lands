@@ -26,7 +26,7 @@ std::string Holder::getFio() const
     return _fio;
 }
 
-void Holder::setFio(std::string fio)
+void Holder::setFio(const std::string& fio)
 {
     _fio = fio;
 }
@@ -38,9 +38,9 @@ void Holder::addLand(Land* land)
 
 void Holder::deleteLand(Land *land)
 {
-    auto find {std::find(_lands.begin(), _lands.end(), land)};
-    if (find == _lands.end()) {return;}
-    _lands.erase(find);
+    LandIterator foundLand {std::find(_lands.begin(), _lands.end(), land)};
+    if (foundLand == _lands.end()) {return;}
+    _lands.erase(foundLand);
 }
 
 

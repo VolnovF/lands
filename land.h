@@ -27,6 +27,7 @@ private:
     std::map<Holder*,double> _holders;
     std::list<HolderAndPart> _addQueue;
 
+    double calculatePartArea(Fraction fraction);
     void addHolder(Holder* holder, double part);
     void addHolder(HolderAndPart pair);
     void deleteAllHolders();
@@ -42,7 +43,7 @@ public:
     void add(Holder* holder, Fraction fraction);
     void add(Holder* holder, double area);
     bool commit();
-    void clear();
+    void clearQueue();
 
     void setAddres(const std::string& addres);
     void calculateArea();
