@@ -1,11 +1,18 @@
 ﻿#include "land.h"
 
+double floor(double decimal, int countDecimalPlaces)
+{
+    return std::floor(decimal * std::pow(10, countDecimalPlaces)) / std::pow(10, countDecimalPlaces);
+}
+
 Land::Land(const std::string& addres, IShape* shape)
     : _currentShape{shape},
     _newShape(shape),
     _addres{addres},
     _area{shape->getRoundArea()}
-{}
+{
+    addHolder(Holder::getChamber(), _area);
+}
 
 Land::Land(Land&& other)
 {
@@ -20,12 +27,12 @@ Land::Land(Land&& other)
 
 double Land::calculatePartArea(Fraction fraction)
 {
-    return _newShape->getRoundArea() * fraction.value();
+    return floor(_newShape->getRoundArea() * fraction.value(), countDecimalPlaces);
 }
 
 void Land::addHolder(Holder* holder, double part)
 {
-    _holders.insert(std::make_pair(holder, part));
+    _holders.insert(std::make_pair(holder, floor(part, countDecimalPlaces)));
 }
 
 void Land::addHolder(HolderAndPart pair)
@@ -46,6 +53,7 @@ void Land::changeShape(IShape* shape)
 {
     if (!shape) {return;}
     _newShape = shape;
+    if (_currentShape == _newShape) {return;}
     clearQueue();
 }
 
@@ -61,24 +69,21 @@ void Land::add(Holder *holder, double area)
 
 bool Land::commit()
 {
-    double sumArea{0};
+    double sumArea {0};
     bool shapeChanged {_currentShape != _newShape};
     for (HolderAndPart pair : _addQueue)
     {
         sumArea += pair.second;
     }
-    double difference{std::abs(_newShape->getRoundArea() - sumArea)};
-    if (difference > 0.0000001)
+    double difference {_newShape->getRoundArea() - sumArea};
+    if (difference < 0)
     {
         clearQueue();
         return false;
     }
-    if (shapeChanged)
-    {
-        _currentShape = _newShape;
-        calculateArea();
-        deleteAllHolders();
-    }
+    _currentShape = _newShape;
+    calculateArea();
+    deleteAllHolders();
     for (HolderAndPart pair : _addQueue)
     {
         addHolder(pair);

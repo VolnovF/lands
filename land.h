@@ -16,6 +16,9 @@ using HolderAndPart = std::pair<Holder*,double>;
 using QueueIterator = std::list<HolderAndPart>::iterator;
 using QueueConstIterator = std::list<HolderAndPart>::const_iterator;
 
+constexpr int countDecimalPlaces {2};
+
+double floor(double decimal, int countDecimalPlaces = 0);
 
 class Land
 {
