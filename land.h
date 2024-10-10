@@ -13,12 +13,13 @@
 using HolderIterator = std::map<Holder*,double>::iterator;
 using HolderConstIterator = std::map<Holder*,double>::const_iterator;
 using HolderAndPart = std::pair<Holder*,double>;
-using QueueIterator = std::list<HolderAndPart>::iterator;
-using QueueConstIterator = std::list<HolderAndPart>::const_iterator;
+using ListIterator = std::list<HolderAndPart>::iterator;
+using ListConstIterator = std::list<HolderAndPart>::const_iterator;
 
-constexpr int countDecimalPlaces {2};
+constexpr int countDigitsAfterPoint {2};
 
-double floor(double decimal, int countDecimalPlaces = 0);
+double Floor(double decimal, int countDigits = countDigitsAfterPoint);
+double Round(double decimal, int countDigits = countDigitsAfterPoint);
 
 class Land
 {
@@ -28,9 +29,15 @@ private:
     std::string _addres;
     double _area;
     std::map<Holder*,double> _holders;
-    std::list<HolderAndPart> _addQueue;
+    std::list<HolderAndPart> _addList;
 
+    void replaceShape();
     double calculatePartArea(Fraction fraction);
+    double listSumArea();
+    void distributeRemains(double remains);
+    bool askHolder(const Holder* holder, double areaBefore, double areaAfter);
+    void moveListToHolders();
+
     void addHolder(Holder* holder, double part);
     void addHolder(HolderAndPart pair);
     void deleteAllHolders();
@@ -46,15 +53,13 @@ public:
     void add(Holder* holder, Fraction fraction);
     void add(Holder* holder, double area);
     bool commit();
-    void clearQueue();
+    void clearList();
 
     void setAddres(const std::string& addres);
-    void calculateArea();
 
     const IShape* getShape() const;
     const std::string& getAddres() const;
     double getArea() const;
-    //double getRoundArea() const;
     const double* getPart(Holder* holder) const;
     double getHolderArea(Holder* holder) const;
     const std::map<Holder*,double>& getHolders() const;

@@ -10,36 +10,30 @@
 
 int main()
 {
-    Land triangle {"ул.Ленина 181", new Triangle(5, 4, 3)};
-    Land circle {"ул.Ленина 182", new Circle(2)};
-    Land rectangle {"ул.Ленина 183", new Rectangle(1, 2)};
-    Land square {"ул.Ленина 184", new Square(1)};
+    Land triangle {"6га", new Triangle(5, 4, 3)};
+    Land circle {"круг", new Circle(2)};
+    Land rectangle {"2га", new Rectangle(1, 2)};
+    Land square {"1га", new Square(1)};
 
-    Holder ivan{"Иванов Иван Иванович"};
-    Holder konstantin{"Константин Сергеевич"};
-    Holder anton{"Антон"};
-
-    rectangle.add(&ivan, Fraction(1,3));
-    rectangle.add(&konstantin, Fraction(1,3));
-    rectangle.add(&anton, Fraction(1,3));
-    std::cout << rectangle.commit() << ' ';
-
-    rectangle.changeShape(new Rectangle(3,2));
-    rectangle.add(&ivan, Fraction(1,3));
-    rectangle.add(&konstantin, Fraction(1,3));
-    rectangle.add(&anton, Fraction(1,3));
-    std::cout << rectangle.commit() << ' ';
+    Holder ivan{"1"};
+    Holder konstantin{"2"};
+    Holder anton{"3"};
 
     triangle.add(&ivan, Fraction(97,99));
     triangle.add(&konstantin, Fraction(2,99));
-    std::cout << triangle.commit() << ' ';
+    triangle.commit();
 
     circle.add(&anton, Fraction(1));
-    std::cout << circle.commit() << ' ';
+    circle.commit();
 
-    square.add(&ivan, Fraction(5,12));
-    square.add(&konstantin, Fraction(7,12));
-    std::cout << square.commit() << '\n';
+    rectangle.add(&ivan, Fraction(1,3));
+    rectangle.add(&konstantin, Fraction(1,3));
+    rectangle.add(&anton, Fraction(1,3));
+    rectangle.commit();
+
+    square.add(&ivan, 0.7);
+    square.add(&konstantin, 0.3);
+    square.commit();
 
     std::cout << triangle.getAddres() << " площадью " << triangle.getArea() << " га. земли\n" ;
     std::cout << circle.getAddres() << " площадью " << circle.getArea() << " га. земли\n";
@@ -50,5 +44,6 @@ int main()
     std::cout << ivan.getFio() << " владеет " << ivan.getArea() << " га. земли\n" ;
     std::cout << konstantin.getFio() << " владеет " << konstantin.getArea() << " га. земли\n" ;
     std::cout << anton.getFio() << " владеет " << anton.getArea() << " га. земли\n";
+    std::cout << Holder::getChamber()->getFio() << " владеет " << Holder::getChamber()->getArea() << " га. земли\n";
     std::cout << "Всего: " << ivan.getArea() + konstantin.getArea() + anton.getArea() << " га. земли\n" ;
 }

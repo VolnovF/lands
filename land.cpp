@@ -1,8 +1,13 @@
 ﻿#include "land.h"
 
-double floor(double decimal, int countDecimalPlaces)
+double Floor(double decimal, int countDigits)
 {
-    return std::floor(decimal * std::pow(10, countDecimalPlaces)) / std::pow(10, countDecimalPlaces);
+    return std::floor(decimal * std::pow(10, countDigits)) / std::pow(10, countDigits);
+}
+
+double Round(double decimal, int countDigits)
+{
+    return std::round(decimal * std::pow(10, countDigits)) / std::pow(10, countDigits);
 }
 
 Land::Land(const std::string& addres, IShape* shape)
@@ -18,26 +23,96 @@ Land::Land(Land&& other)
 {
     _currentShape = other._currentShape;
     other._currentShape = nullptr;
+    _newShape = other._newShape;
+    other._newShape = nullptr;
     _addres = std::move(other._addres);
     _area = other._area;
     other._area = 0;
     _holders = std::move(other._holders);
-    _addQueue = std::move(other._addQueue);
+    _addList = std::move(other._addList);
+}
+
+void Land::replaceShape()
+{
+    delete _currentShape;
+    _currentShape = _newShape;
+    _area = _currentShape->getRoundArea();
 }
 
 double Land::calculatePartArea(Fraction fraction)
 {
-    return floor(_newShape->getRoundArea() * fraction.value(), countDecimalPlaces);
+    return Floor(_newShape->getRoundArea() * fraction.value());
+}
+
+double Land::listSumArea()
+{
+    double sum{0};
+    for (HolderAndPart pair : _addList)
+    {
+        sum += pair.second;
+    }
+    return sum;
 }
 
 void Land::addHolder(Holder* holder, double part)
 {
-    _holders.insert(std::make_pair(holder, floor(part, countDecimalPlaces)));
+    _holders.insert(std::make_pair(holder, Floor(part)));
+    holder->addLand(this);
 }
 
 void Land::addHolder(HolderAndPart pair)
 {
     _holders.insert(pair);
+    pair.first->addLand(this);
+}
+
+void Land::distributeRemains(double remains)
+{
+    if (remains <= 0)
+        return;
+    double partOfRemains { Round(remains/_holders.size()) };
+    if (partOfRemains == 0)
+        partOfRemains = 0.01;
+    for (HolderIterator iter = _holders.begin(); iter != _holders.end(); iter++)
+    {
+        if(askHolder(iter->first, iter->second, iter->second+partOfRemains))
+        {
+            iter->second += partOfRemains;
+            remains -= partOfRemains;
+        }
+        if(remains <= 0)
+            return;
+        else if (partOfRemains > remains)
+            partOfRemains = remains;
+    }
+    addHolder(Holder::getChamber(), remains);
+}
+
+bool Land::askHolder(const Holder* holder, double areaBefore, double areaAfter)
+{
+    std::cout << holder->getFio() << ", вашу долю в участке " << this->getAddres() <<
+        " можно увеличить с " << areaBefore << " га. до " << areaAfter << " га.\n";
+    char response;
+    while (true) {
+        std::cout << "Вы согласны? (y/n): ";
+        std::cin >> response;
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        //response = 'y'; //!
+        if (response == 'y')
+            return true;
+        else if (response == 'n')
+            return false;
+    }
+}
+
+void Land::moveListToHolders()
+{
+    for (HolderAndPart pair : _addList)
+    {
+        addHolder(pair);
+    }
+    clearList();
 }
 
 void Land::deleteAllHolders()
@@ -51,62 +126,50 @@ void Land::deleteAllHolders()
 
 void Land::changeShape(IShape* shape)
 {
-    if (!shape) {return;}
+    if (!shape)
+        return;
     _newShape = shape;
-    if (_currentShape == _newShape) {return;}
-    clearQueue();
+    if (_currentShape == _newShape)
+        return;
+    clearList();
 }
 
 void Land::add(Holder *holder, Fraction fraction)
 {
-    _addQueue.push_front(std::make_pair(holder, calculatePartArea(fraction)));
+    _addList.push_front(std::make_pair(holder, calculatePartArea(fraction)));
 }
 
 void Land::add(Holder *holder, double area)
 {
-    _addQueue.push_front(std::make_pair(holder, area));;
+    _addList.push_front(std::make_pair(holder, area));;
 }
 
 bool Land::commit()
 {
-    double sumArea {0};
-    bool shapeChanged {_currentShape != _newShape};
-    for (HolderAndPart pair : _addQueue)
+    double sumArea {listSumArea()};
+    double remains {Round(_newShape->getRoundArea() - sumArea)};
+    if (remains < 0)
     {
-        sumArea += pair.second;
-    }
-    double difference {_newShape->getRoundArea() - sumArea};
-    if (difference < 0)
-    {
-        clearQueue();
+        clearList();
         return false;
     }
-    _currentShape = _newShape;
-    calculateArea();
+    if (_currentShape != _newShape)
+        replaceShape();
     deleteAllHolders();
-    for (HolderAndPart pair : _addQueue)
-    {
-        addHolder(pair);
-        pair.first->addLand(this);
-    }
-    clearQueue();
+    moveListToHolders();
+    if (remains > 0)
+        distributeRemains(remains);
     return true;
 }
 
-void Land::clearQueue()
+void Land::clearList()
 {
-    _addQueue.erase(_addQueue.begin(), _addQueue.end());
+    _addList.erase(_addList.begin(), _addList.end());
 }
 
 void Land::setAddres(const std::string& addres)
 {
     _addres = addres;
-}
-
-
-void Land::calculateArea()
-{
-    _area = _currentShape->getRoundArea();
 }
 
 const IShape *Land::getShape() const
@@ -127,14 +190,16 @@ double Land::getArea() const
 const double *Land::getPart(Holder* holder) const
 {
     HolderConstIterator holderIter {_holders.find(holder)};
-    if (holderIter == _holders.end()) { return nullptr; }
+    if (holderIter == _holders.end())
+        return nullptr;
     return &(holderIter->second);
 }
 
 double Land::getHolderArea(Holder* holder) const
 {
     const double* part {getPart(holder)};
-    if (!part) { return 0; }
+    if (!part)
+        return 0;
     return *part;
 }
 
@@ -145,9 +210,10 @@ const std::map<Holder*, double>& Land::getHolders() const
 
 Land::~Land()
 {
-    if (_currentShape != _newShape) {delete _newShape;}
+    if (_currentShape != _newShape)
+        delete _newShape;
     delete _currentShape;
-    clearQueue();
+    clearList();
 }
 
 double Holder::getArea()

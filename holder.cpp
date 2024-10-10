@@ -15,9 +15,7 @@ Holder::Holder(Holder &&other)
 Holder* Holder::getChamber()
 {
     if(!_chamber)
-    {
         _chamber = new Holder("Земельная палата");
-    }
     return _chamber;
 }
 
@@ -39,7 +37,8 @@ void Holder::addLand(Land* land)
 void Holder::deleteLand(Land *land)
 {
     LandIterator foundLand {std::find(_lands.begin(), _lands.end(), land)};
-    if (foundLand == _lands.end()) {return;}
+    if (foundLand == _lands.end())
+        return;
     _lands.erase(foundLand);
 }
 
