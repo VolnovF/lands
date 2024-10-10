@@ -8,8 +8,13 @@
 #include "land.h"
 #include "holder.h"
 
+//#include <locale>
+//#include "Windows.h"
+
 int main()
 {
+    //SetConsoleOutputCP(CP_UTF8);
+
     Land triangle {"Треугольник", new Triangle(5, 4, 3)};
     Land circle {"Круг", new Circle(2)};
     Land rectangle {"Прямоугольник", new Rectangle(1, 2)};
