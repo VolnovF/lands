@@ -44,23 +44,6 @@ double Land::listSumArea()
     return sum;
 }
 
-void Land::addHolder(Holder* holder, double part)
-{
-    addHolder(std::make_pair(holder, part));
-}
-
-void Land::addHolder(HolderAndPart pair)
-{
-    HolderIterator iter {_holders.find(pair.first)};
-    if (iter != _holders.end())
-    {
-        iter->second += pair.second;
-        return;
-    }
-    _holders.insert(pair);
-    pair.first->addLand(this);
-}
-
 void Land::distributeRemains(double remains)
 {
     if (remains <= 0)
@@ -87,7 +70,7 @@ bool Land::askHolder(const Holder* holder, double areaBefore, double areaAfter)
 {
     std::cout << holder->getFio() << ", вашу долю в участке \"" << this->getAddres() <<
         "\" можно увеличить с " << areaBefore << " га. до " << areaAfter << " га.\n";
-    char response;
+        char response;
     while (true) {
         std::cout << "Вы согласны? (y/n): ";
         std::cin >> response;
@@ -107,6 +90,23 @@ void Land::moveListToHolders()
         addHolder(pair);
     }
     clearList();
+}
+
+void Land::addHolder(Holder* holder, double part)
+{
+    addHolder(std::make_pair(holder, part));
+}
+
+void Land::addHolder(HolderAndPart pair)
+{
+    HolderIterator iter {_holders.find(pair.first)};
+    if (iter != _holders.end())
+    {
+        iter->second += pair.second;
+        return;
+    }
+    _holders.insert(pair);
+    pair.first->addLand(this);
 }
 
 void Land::deleteAllHolders()
