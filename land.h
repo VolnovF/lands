@@ -6,6 +6,7 @@
 #include <map>
 #include <list>
 
+#include "round.h"
 #include "shape.h"
 #include "fraction.h"
 #include "holder.h"
@@ -15,11 +16,6 @@ using HolderConstIterator = std::map<Holder*,double>::const_iterator;
 using HolderAndPart = std::pair<Holder*,double>;
 using ListIterator = std::list<HolderAndPart>::iterator;
 using ListConstIterator = std::list<HolderAndPart>::const_iterator;
-
-constexpr int countDigitsAfterPoint {2};
-
-double Floor(double decimal, int countDigits = countDigitsAfterPoint);
-double Round(double decimal, int countDigits = countDigitsAfterPoint);
 
 class Land
 {

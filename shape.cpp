@@ -2,10 +2,10 @@
 
 double IShape::getRoundArea() const
 {
-    return (std::round(getArea()) * 100) / 100;
+    return Round(getArea());
 }
 
 double IShape::getFloorArea() const
 {
-    return (std::floor(getArea()) * 100) / 100;
+    return Floor(getArea());
 }

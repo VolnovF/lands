@@ -2,6 +2,7 @@
 #define SHAPE_H
 
 #include <cmath>
+#include <round.h>
 
 class IShape
 {
