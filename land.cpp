@@ -46,12 +46,17 @@ double Land::listSumArea()
 
 void Land::addHolder(Holder* holder, double part)
 {
-    _holders.insert(std::make_pair(holder, Floor(part)));
-    holder->addLand(this);
+    addHolder(std::make_pair(holder, part));
 }
 
 void Land::addHolder(HolderAndPart pair)
 {
+    HolderIterator iter {_holders.find(pair.first)};
+    if (iter != _holders.end())
+    {
+        iter->second += pair.second;
+        return;
+    }
     _holders.insert(pair);
     pair.first->addLand(this);
 }
@@ -80,15 +85,14 @@ void Land::distributeRemains(double remains)
 
 bool Land::askHolder(const Holder* holder, double areaBefore, double areaAfter)
 {
-    std::cout << holder->getFio() << ", вашу долю в участке " << this->getAddres() <<
-        " можно увеличить с " << areaBefore << " га. до " << areaAfter << " га.\n";
+    std::cout << holder->getFio() << ", вашу долю в участке \"" << this->getAddres() <<
+        "\" можно увеличить с " << areaBefore << " га. до " << areaAfter << " га.\n";
     char response;
     while (true) {
         std::cout << "Вы согласны? (y/n): ";
         std::cin >> response;
         std::cin.clear();
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        //response = 'y'; //!
         if (response == 'y')
             return true;
         else if (response == 'n')
@@ -118,9 +122,10 @@ void Land::changeShape(IShape* shape)
 {
     if (!shape)
         return;
-    _newShape = shape;
     if (_currentShape == _newShape)
         return;
+    delete _newShape;
+    _newShape = shape;
     clearList();
 }
 
@@ -131,7 +136,7 @@ void Land::add(Holder *holder, Fraction fraction)
 
 void Land::add(Holder *holder, double area)
 {
-    _addList.push_front(std::make_pair(holder, area));;
+    _addList.push_front(std::make_pair(holder, Floor(area)));;
 }
 
 bool Land::commit()
@@ -177,20 +182,12 @@ double Land::getArea() const
     return _area;
 }
 
-const double *Land::getPart(Holder* holder) const
-{
-    HolderConstIterator holderIter {_holders.find(holder)};
-    if (holderIter == _holders.end())
-        return nullptr;
-    return &(holderIter->second);
-}
-
 double Land::getHolderArea(Holder* holder) const
 {
-    const double* part {getPart(holder)};
-    if (!part)
+    HolderConstIterator iter {_holders.find(holder)};
+    if (iter == _holders.end())
         return 0;
-    return *part;
+    return iter->second;
 }
 
 const std::map<Holder*, double>& Land::getHolders() const

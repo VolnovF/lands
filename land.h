@@ -56,7 +56,6 @@ public:
     const IShape* getShape() const;
     const std::string& getAddres() const;
     double getArea() const;
-    const double* getPart(Holder* holder) const;
     double getHolderArea(Holder* holder) const;
     const std::map<Holder*,double>& getHolders() const;
 
